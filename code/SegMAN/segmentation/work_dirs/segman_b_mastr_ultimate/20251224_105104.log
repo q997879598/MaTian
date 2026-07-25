@@ -1,0 +1,276 @@
+2025-12-24 10:51:04,413 - mmseg - INFO - Multi-processing start method is `None`
+2025-12-24 10:51:04,414 - mmseg - INFO - OpenCV num_threads is `14
+2025-12-24 10:51:04,414 - mmseg - INFO - OMP num threads is 14
+2025-12-24 10:51:04,415 - mmseg - INFO - MKL num threads is 14
+2025-12-24 10:51:04,501 - mmseg - INFO - Environment info:
+------------------------------------------------------------
+sys.platform: linux
+Python: 3.10.19 (main, Oct 21 2025, 16:43:05) [GCC 11.2.0]
+CUDA available: True
+GPU 0: NVIDIA GeForce RTX 3090
+CUDA_HOME: /usr/local/cuda
+NVCC: Cuda compilation tools, release 12.1, V12.1.105
+GCC: gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+PyTorch: 2.1.2+cu121
+PyTorch compiling details: PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201703
+  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v3.1.1 (Git Hash 64f6bcbcbab628e96f33a62c3e975f8535a7bde4)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX512
+  - CUDA Runtime 12.1
+  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_90,code=sm_90
+  - CuDNN 8.9.2
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=12.1, CUDNN_VERSION=8.9.2, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=old-style-cast -Wno-invalid-partial-specialization -Wno-unused-private-field -Wno-aligned-allocation-unavailable -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.1.2, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+TorchVision: 0.16.2+cu121
+OpenCV: 4.11.0
+MMCV: 1.7.2
+MMCV Compiler: GCC 9.3
+MMCV CUDA Compiler: 12.1
+MMSegmentation: 0.30.0+ac60643
+------------------------------------------------------------
+
+2025-12-24 10:51:04,502 - mmseg - INFO - Distributed training: False
+2025-12-24 10:51:05,375 - mmseg - INFO - Config:
+norm_cfg = dict(type='SyncBN', requires_grad=True)
+model = dict(
+    type='EncoderDecoder',
+    pretrained=None,
+    backbone=dict(
+        type='SegMANEncoder_b',
+        style='pytorch',
+        pretrained='/root/autodl-tmp/SegMAN/pretrained/SegMAN_Encoder_b.pth.tar'
+    ),
+    decode_head=dict(
+        type='MaritimeUltimateDecoder',
+        in_channels=[96, 160, 364, 560],
+        in_index=[0, 1, 2, 3],
+        channels=180,
+        dropout_ratio=0.1,
+        num_classes=3,
+        norm_cfg=dict(type='SyncBN', requires_grad=True),
+        align_corners=False,
+        decoder_params=dict(embed_dim=128),
+        loss_decode=[
+            dict(
+                type='CrossEntropyLoss',
+                use_sigmoid=False,
+                loss_weight=1.0,
+                class_weight=[3.0, 1.0, 1.0],
+                avg_non_ignore=True),
+            dict(
+                type='LovaszLoss',
+                loss_type='multi_class',
+                per_image=True,
+                loss_weight=1.0,
+                ignore_index=255),
+            dict(
+                type='DiceLoss',
+                loss_name='loss_boundary',
+                loss_weight=0.5,
+                class_weight=[3.0, 1.0, 1.0],
+                ignore_index=255)
+        ],
+        feat_proj_dim=320),
+    train_cfg=dict(),
+    test_cfg=dict(mode='whole'))
+dataset_type = 'MaSTr1325Dataset'
+data_root = '/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX'
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+crop_size = (512, 512)
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations'),
+    dict(type='Resize', img_scale=(1325, 954), ratio_range=(0.5, 1.0)),
+    dict(type='RandomCrop', crop_size=(512, 512), cat_max_ratio=0.75),
+    dict(type='RandomFlip', prob=0.5),
+    dict(
+        type='Albu',
+        transforms=[
+            dict(type='ISONoise', p=0.2),
+            dict(type='GaussianBlur', blur_limit=(3, 7), p=0.1)
+        ],
+        keymap=dict(img='image', gt_semantic_seg='mask'),
+        update_pad_shape=False),
+    dict(
+        type='PhotoMetricDistortion',
+        brightness_delta=32,
+        contrast_range=(0.8, 1.2),
+        saturation_range=(0.0, 1.5),
+        hue_delta=18),
+    dict(
+        type='Normalize',
+        mean=[123.675, 116.28, 103.53],
+        std=[58.395, 57.12, 57.375],
+        to_rgb=True),
+    dict(type='Pad', size_divisor=32, pad_val=0, seg_pad_val=255),
+    dict(type='DefaultFormatBundle'),
+    dict(type='Collect', keys=['img', 'gt_semantic_seg'])
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=(1325, 954),
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip'),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32, pad_val=0, seg_pad_val=255),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img'])
+        ])
+]
+data = dict(
+    samples_per_gpu=4,
+    workers_per_gpu=4,
+    train=dict(
+        type='MaSTr1325Dataset',
+        data_root='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX',
+        img_dir='images',
+        ann_dir='masks',
+        split=
+        '/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX/train.txt',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations'),
+            dict(type='Resize', img_scale=(1325, 954), ratio_range=(0.5, 1.0)),
+            dict(type='RandomCrop', crop_size=(512, 512), cat_max_ratio=0.75),
+            dict(type='RandomFlip', prob=0.5),
+            dict(
+                type='Albu',
+                transforms=[
+                    dict(type='ISONoise', p=0.2),
+                    dict(type='GaussianBlur', blur_limit=(3, 7), p=0.1)
+                ],
+                keymap=dict(img='image', gt_semantic_seg='mask'),
+                update_pad_shape=False),
+            dict(
+                type='PhotoMetricDistortion',
+                brightness_delta=32,
+                contrast_range=(0.8, 1.2),
+                saturation_range=(0.0, 1.5),
+                hue_delta=18),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32, pad_val=0, seg_pad_val=255),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_semantic_seg'])
+        ],
+        img_suffix='.jpg',
+        seg_map_suffix='.png'),
+    val=dict(
+        type='MaSTr1325Dataset',
+        data_root='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX',
+        img_dir='images',
+        ann_dir='masks',
+        split='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX/val.txt',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(1325, 954),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(
+                        type='Pad',
+                        size_divisor=32,
+                        pad_val=0,
+                        seg_pad_val=255),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ],
+        img_suffix='.jpg',
+        seg_map_suffix='.png'),
+    test=dict(
+        type='MaSTr1325Dataset',
+        data_root='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX',
+        img_dir='images',
+        ann_dir='masks',
+        split='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX/val.txt',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(1325, 954),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(
+                        type='Pad',
+                        size_divisor=32,
+                        pad_val=0,
+                        seg_pad_val=255),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ],
+        img_suffix='.jpg',
+        seg_map_suffix='.png'))
+log_config = dict(
+    interval=50, hooks=[dict(type='TextLoggerHook', by_epoch=False)])
+dist_params = dict(backend='nccl')
+log_level = 'INFO'
+load_from = None
+resume_from = None
+workflow = [('train', 1)]
+cudnn_benchmark = True
+optimizer = dict(
+    type='AdamW',
+    lr=6e-05,
+    betas=(0.9, 0.999),
+    weight_decay=0.01,
+    paramwise_cfg=dict(
+        custom_keys=dict(
+            pos_block=dict(decay_mult=0.0),
+            norm=dict(decay_mult=0.0),
+            head=dict(lr_mult=10.0))))
+optimizer_config = dict(
+    type='GradientCumulativeOptimizerHook',
+    cumulative_iters=2,
+    grad_clip=dict(max_norm=10.0, norm_type=2))
+lr_config = dict(
+    policy='poly',
+    warmup='linear',
+    warmup_iters=1500,
+    warmup_ratio=1e-06,
+    power=1.0,
+    min_lr=0.0,
+    by_epoch=False)
+runner = dict(type='IterBasedRunner', max_iters=80000)
+checkpoint_config = dict(by_epoch=False, interval=2000, max_keep_ckpts=3)
+evaluation = dict(interval=2000, metric='mIoU', save_best='mIoU')
+find_unused_parameters = False
+work_dir = 'work_dirs/segman_b_mastr_ultimate'
+gpu_ids = [0]
+auto_resume = False
+
+2025-12-24 10:51:05,376 - mmseg - INFO - Set random seed to 457067895, deterministic: False

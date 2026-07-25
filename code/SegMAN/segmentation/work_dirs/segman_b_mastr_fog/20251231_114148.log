@@ -1,0 +1,1312 @@
+2025-12-31 11:41:48,819 - mmseg - INFO - Multi-processing start method is `None`
+2025-12-31 11:41:48,819 - mmseg - INFO - OpenCV num_threads is `14
+2025-12-31 11:41:48,819 - mmseg - INFO - OMP num threads is 14
+2025-12-31 11:41:48,819 - mmseg - INFO - MKL num threads is 14
+2025-12-31 11:41:48,875 - mmseg - INFO - Environment info:
+------------------------------------------------------------
+sys.platform: linux
+Python: 3.10.19 (main, Oct 21 2025, 16:43:05) [GCC 11.2.0]
+CUDA available: True
+GPU 0: NVIDIA GeForce RTX 3090
+CUDA_HOME: /usr/local/cuda
+NVCC: Cuda compilation tools, release 12.1, V12.1.105
+GCC: gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+PyTorch: 2.1.2+cu121
+PyTorch compiling details: PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201703
+  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v3.1.1 (Git Hash 64f6bcbcbab628e96f33a62c3e975f8535a7bde4)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX512
+  - CUDA Runtime 12.1
+  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_90,code=sm_90
+  - CuDNN 8.9.2
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=12.1, CUDNN_VERSION=8.9.2, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=old-style-cast -Wno-invalid-partial-specialization -Wno-unused-private-field -Wno-aligned-allocation-unavailable -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.1.2, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+TorchVision: 0.16.2+cu121
+OpenCV: 4.11.0
+MMCV: 1.7.2
+MMCV Compiler: GCC 9.3
+MMCV CUDA Compiler: 12.1
+MMSegmentation: 0.30.0+ac60643
+------------------------------------------------------------
+
+2025-12-31 11:41:48,875 - mmseg - INFO - Distributed training: False
+2025-12-31 11:41:49,603 - mmseg - INFO - Config:
+norm_cfg = dict(type='SyncBN', requires_grad=True)
+model = dict(
+    type='EncoderDecoder',
+    pretrained=None,
+    backbone=dict(
+        type='SegMANEncoder_b',
+        style='pytorch',
+        pretrained=
+        '/root/autodl-tmp/SegMAN/pretrained/SegMAN_Encoder_b.pth.tar',
+        drop_path_rate=0.2),
+    decode_head=dict(
+        type='SegMANDecoderFog',
+        in_channels=[96, 160, 364, 560],
+        in_index=[0, 1, 2, 3],
+        channels=180,
+        dropout_ratio=0.1,
+        num_classes=3,
+        norm_cfg=dict(type='SyncBN', requires_grad=True),
+        align_corners=False,
+        decoder_params=dict(embed_dim=128),
+        loss_decode=[
+            dict(
+                type='CrossEntropyLoss',
+                use_sigmoid=False,
+                loss_weight=1.0,
+                class_weight=[5.0, 1.0, 1.0],
+                avg_non_ignore=True),
+            dict(
+                type='LovaszLoss',
+                loss_type='multi_class',
+                per_image=True,
+                loss_weight=1.0),
+            dict(
+                type='DiceLoss',
+                loss_name='loss_dice',
+                loss_weight=0.5,
+                class_weight=[5.0, 1.0, 1.0],
+                ignore_index=255)
+        ],
+        feat_proj_dim=320,
+        sampler=None),
+    train_cfg=dict(),
+    test_cfg=dict(mode='whole'))
+dataset_type = 'MaSTr1325Dataset'
+data_root = '/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX'
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+crop_size = (512, 512)
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations'),
+    dict(type='Resize', img_scale=(1325, 954), ratio_range=(0.5, 1.2)),
+    dict(type='RandomCrop', crop_size=(512, 512), cat_max_ratio=0.75),
+    dict(type='RandomFlip', prob=0.5, direction='horizontal'),
+    dict(
+        type='Albu',
+        transforms=[
+            dict(type='GaussianBlur', blur_limit=(3, 7), p=0.3),
+            dict(
+                type='HueSaturationValue',
+                hue_shift_limit=10,
+                sat_shift_limit=40,
+                val_shift_limit=20,
+                p=0.6),
+            dict(
+                type='ISONoise',
+                color_shift=(0.01, 0.05),
+                intensity=(0.1, 0.5),
+                p=0.2),
+            dict(type='GaussNoise', var_limit=(10.0, 50.0), p=0.2)
+        ],
+        keymap=dict(img='image', gt_semantic_seg='mask'),
+        update_pad_shape=False),
+    dict(
+        type='Normalize',
+        mean=[123.675, 116.28, 103.53],
+        std=[58.395, 57.12, 57.375],
+        to_rgb=True),
+    dict(type='Pad', size=(512, 512), pad_val=0, seg_pad_val=255),
+    dict(type='DefaultFormatBundle'),
+    dict(type='Collect', keys=['img', 'gt_semantic_seg'])
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=(1325, 954),
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip'),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32, pad_val=0, seg_pad_val=255),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img'])
+        ])
+]
+data = dict(
+    samples_per_gpu=4,
+    workers_per_gpu=4,
+    train=dict(
+        type='MaSTr1325Dataset',
+        data_root='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX',
+        img_dir='images',
+        ann_dir='masks',
+        split=
+        '/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX/train.txt',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations'),
+            dict(type='Resize', img_scale=(1325, 954), ratio_range=(0.5, 1.2)),
+            dict(type='RandomCrop', crop_size=(512, 512), cat_max_ratio=0.75),
+            dict(type='RandomFlip', prob=0.5, direction='horizontal'),
+            dict(
+                type='Albu',
+                transforms=[
+                    dict(type='GaussianBlur', blur_limit=(3, 7), p=0.3),
+                    dict(
+                        type='HueSaturationValue',
+                        hue_shift_limit=10,
+                        sat_shift_limit=40,
+                        val_shift_limit=20,
+                        p=0.6),
+                    dict(
+                        type='ISONoise',
+                        color_shift=(0.01, 0.05),
+                        intensity=(0.1, 0.5),
+                        p=0.2),
+                    dict(type='GaussNoise', var_limit=(10.0, 50.0), p=0.2)
+                ],
+                keymap=dict(img='image', gt_semantic_seg='mask'),
+                update_pad_shape=False),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size=(512, 512), pad_val=0, seg_pad_val=255),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_semantic_seg'])
+        ],
+        img_suffix='.jpg',
+        seg_map_suffix='.png'),
+    val=dict(
+        type='MaSTr1325Dataset',
+        data_root='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX',
+        img_dir='images',
+        ann_dir='masks',
+        split='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX/val.txt',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(1325, 954),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(
+                        type='Pad',
+                        size_divisor=32,
+                        pad_val=0,
+                        seg_pad_val=255),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ],
+        img_suffix='.jpg',
+        seg_map_suffix='.png'),
+    test=dict(
+        type='MaSTr1325Dataset',
+        data_root='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX',
+        img_dir='images',
+        ann_dir='masks',
+        split='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX/val.txt',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(1325, 954),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(
+                        type='Pad',
+                        size_divisor=32,
+                        pad_val=0,
+                        seg_pad_val=255),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ],
+        img_suffix='.jpg',
+        seg_map_suffix='.png'))
+log_config = dict(
+    interval=50,
+    hooks=[dict(type='TextLoggerHook'),
+           dict(type='TensorboardLoggerHook')])
+dist_params = dict(backend='nccl')
+log_level = 'INFO'
+load_from = None
+resume_from = None
+workflow = [('train', 1)]
+cudnn_benchmark = True
+optimizer = dict(
+    type='AdamW',
+    lr=6e-05,
+    weight_decay=0.01,
+    betas=(0.9, 0.999),
+    paramwise_cfg=dict(
+        custom_keys=dict(
+            pos_block=dict(decay_mult=0.0),
+            norm=dict(decay_mult=0.0),
+            head=dict(lr_mult=10.0))))
+optimizer_config = dict(
+    type='GradientCumulativeOptimizerHook',
+    cumulative_iters=1,
+    grad_clip=dict(max_norm=1.0, norm_type=2))
+lr_config = dict(
+    policy='poly',
+    power=1.0,
+    min_lr=0.0,
+    by_epoch=False,
+    warmup='linear',
+    warmup_iters=1500,
+    warmup_ratio=1e-06)
+runner = dict(type='IterBasedRunner', max_iters=80000)
+checkpoint_config = dict(by_epoch=False, interval=2000, max_keep_ckpts=3)
+evaluation = dict(interval=2000, metric='mIoU', save_best='mIoU')
+find_unused_parameters = False
+work_dir = './work_dirs/segman_b_mastr_fog'
+gpu_ids = [0]
+auto_resume = False
+
+2025-12-31 11:41:49,603 - mmseg - INFO - Set random seed to 7725816, deterministic: False
+2025-12-31 11:41:51,080 - mmseg - INFO - loaded pretrained weights using state_dict_ema from /root/autodl-tmp/SegMAN/pretrained/SegMAN_Encoder_b.pth.tar
+2025-12-31 11:41:51,287 - mmseg - INFO - EncoderDecoder(
+  (backbone): SegMANEncoder(
+    (patch_embed): Sequential(
+      (0): Conv2d(3, 48, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): GELU(approximate='none')
+      (3): Conv2d(48, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+      (4): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (5): GELU(approximate='none')
+      (6): Conv2d(48, 96, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+      (7): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (8): GELU(approximate='none')
+      (9): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+      (10): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (layers): ModuleList(
+      (0): BasicLayer(
+        (rope): RoPE()
+        (blocks): ModuleList(
+          (0): Block(
+            (cpe1): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+            (norm1): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(96, 288, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(96, 96, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=96)
+              (proj): Conv2d(96, 96, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+                (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 4x21x21])
+            )
+            (cpe2): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+            (norm2): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(96, 384, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384)
+              (fc2): Conv2d(384, 96, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): Identity()
+            (layer_scale1): LayerScale(96, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(96, init_value=1e-06, bias=True)
+          )
+          (1): Block(
+            (cpe1): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+            (norm1): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(96, 288, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(96, 96, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=96)
+              (proj): Conv2d(96, 96, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+                (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 4x21x21])
+            )
+            (cpe2): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+            (norm2): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(96, 384, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384)
+              (fc2): Conv2d(384, 96, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.007)
+            (layer_scale1): LayerScale(96, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(96, init_value=1e-06, bias=True)
+          )
+          (2): Block(
+            (cpe1): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+            (norm1): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(96, 288, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(96, 96, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=96)
+              (proj): Conv2d(96, 96, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+                (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 4x21x21])
+            )
+            (cpe2): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+            (norm2): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(96, 384, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384)
+              (fc2): Conv2d(384, 96, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.014)
+            (layer_scale1): LayerScale(96, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(96, init_value=1e-06, bias=True)
+          )
+          (3): Block(
+            (cpe1): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+            (norm1): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(96, 288, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(96, 96, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=96)
+              (proj): Conv2d(96, 96, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+                (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 4x21x21])
+            )
+            (cpe2): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+            (norm2): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(96, 384, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384)
+              (fc2): Conv2d(384, 96, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.021)
+            (layer_scale1): LayerScale(96, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(96, init_value=1e-06, bias=True)
+          )
+        )
+      )
+      (1): Sequential(
+        (0): Conv2d(96, 160, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (2): BasicLayer(
+        (rope): RoPE()
+        (blocks): ModuleList(
+          (0): Block(
+            (cpe1): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (norm1): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(160, 480, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(160, 160, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=160)
+              (proj): Conv2d(160, 160, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+                (1): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 8x17x17])
+            )
+            (cpe2): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (norm2): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(160, 640, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=640)
+              (fc2): Conv2d(640, 160, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.028)
+            (layer_scale1): LayerScale(160, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(160, init_value=1e-06, bias=True)
+          )
+          (1): Block(
+            (cpe1): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (norm1): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(160, 480, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(160, 160, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=160)
+              (proj): Conv2d(160, 160, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+                (1): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 8x17x17])
+            )
+            (cpe2): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (norm2): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(160, 640, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=640)
+              (fc2): Conv2d(640, 160, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.034)
+            (layer_scale1): LayerScale(160, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(160, init_value=1e-06, bias=True)
+          )
+          (2): Block(
+            (cpe1): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (norm1): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(160, 480, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(160, 160, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=160)
+              (proj): Conv2d(160, 160, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+                (1): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 8x17x17])
+            )
+            (cpe2): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (norm2): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(160, 640, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=640)
+              (fc2): Conv2d(640, 160, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.041)
+            (layer_scale1): LayerScale(160, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(160, init_value=1e-06, bias=True)
+          )
+          (3): Block(
+            (cpe1): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (norm1): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(160, 480, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(160, 160, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=160)
+              (proj): Conv2d(160, 160, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+                (1): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 8x17x17])
+            )
+            (cpe2): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (norm2): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(160, 640, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=640)
+              (fc2): Conv2d(640, 160, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.048)
+            (layer_scale1): LayerScale(160, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(160, init_value=1e-06, bias=True)
+          )
+        )
+      )
+      (3): Sequential(
+        (0): Conv2d(160, 364, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (4): BasicLayer(
+        (rope): RoPE()
+        (blocks): ModuleList(
+          (0): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.055)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (1): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.062)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (2): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.069)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (3): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.076)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (4): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.083)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (5): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.090)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (6): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.097)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (7): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.103)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (8): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.110)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (9): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.117)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (10): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.124)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (11): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.131)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (12): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.138)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (13): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.145)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (14): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.152)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (15): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.159)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (16): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.166)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+          (17): Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.172)
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+        )
+      )
+      (5): Sequential(
+        (0): Conv2d(364, 560, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(560, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (6): BasicLayer(
+        (rope): RoPE()
+        (blocks): ModuleList(
+          (0): Block(
+            (cpe1): Conv2d(560, 560, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=560)
+            (norm1): LayerNorm2d((560,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(560, 1680, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(560, 560, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=560)
+              (proj): Conv2d(560, 560, kernel_size=(1, 1), stride=(1, 1))
+              (rpb): ParameterList(
+                  (0): Parameter containing: [torch.float32 of size 20x13x13]
+                  (1): Parameter containing: [torch.float32 of size 20x49x49]
+              )
+            )
+            (cpe2): Conv2d(560, 560, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=560)
+            (norm2): LayerNorm2d((560,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(560, 1680, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1680, 1680, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1680)
+              (fc2): Conv2d(1680, 560, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.179)
+            (layer_scale1): LayerScale(560, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(560, init_value=1e-06, bias=True)
+          )
+          (1): Block(
+            (cpe1): Conv2d(560, 560, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=560)
+            (norm1): LayerNorm2d((560,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(560, 1680, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(560, 560, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=560)
+              (proj): Conv2d(560, 560, kernel_size=(1, 1), stride=(1, 1))
+              (rpb): ParameterList(
+                  (0): Parameter containing: [torch.float32 of size 20x13x13]
+                  (1): Parameter containing: [torch.float32 of size 20x49x49]
+              )
+            )
+            (cpe2): Conv2d(560, 560, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=560)
+            (norm2): LayerNorm2d((560,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(560, 1680, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1680, 1680, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1680)
+              (fc2): Conv2d(1680, 560, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.186)
+            (layer_scale1): LayerScale(560, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(560, init_value=1e-06, bias=True)
+          )
+          (2): Block(
+            (cpe1): Conv2d(560, 560, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=560)
+            (norm1): LayerNorm2d((560,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(560, 1680, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(560, 560, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=560)
+              (proj): Conv2d(560, 560, kernel_size=(1, 1), stride=(1, 1))
+              (rpb): ParameterList(
+                  (0): Parameter containing: [torch.float32 of size 20x13x13]
+                  (1): Parameter containing: [torch.float32 of size 20x49x49]
+              )
+            )
+            (cpe2): Conv2d(560, 560, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=560)
+            (norm2): LayerNorm2d((560,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(560, 1680, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1680, 1680, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1680)
+              (fc2): Conv2d(1680, 560, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.193)
+            (layer_scale1): LayerScale(560, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(560, init_value=1e-06, bias=True)
+          )
+          (3): Block(
+            (cpe1): Conv2d(560, 560, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=560)
+            (norm1): LayerNorm2d((560,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(560, 1680, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(560, 560, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=560)
+              (proj): Conv2d(560, 560, kernel_size=(1, 1), stride=(1, 1))
+              (rpb): ParameterList(
+                  (0): Parameter containing: [torch.float32 of size 20x13x13]
+                  (1): Parameter containing: [torch.float32 of size 20x49x49]
+              )
+            )
+            (cpe2): Conv2d(560, 560, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=560)
+            (norm2): LayerNorm2d((560,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(560, 1680, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1680, 1680, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1680)
+              (fc2): Conv2d(1680, 560, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): DropPath(drop_prob=0.200)
+            (layer_scale1): LayerScale(560, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(560, init_value=1e-06, bias=True)
+          )
+        )
+      )
+      (7): Identity()
+    )
+  )
+  (decode_head): SegMANDecoderFog(
+    input_transform=multiple_select, ignore_index=255, align_corners=False
+    (loss_decode): ModuleList(
+      (0): CrossEntropyLoss(avg_non_ignore=True)
+      (1): LovaszLoss()
+      (2): DiceLoss()
+    )
+    (conv_seg): Conv2d(180, 3, kernel_size=(1, 1), stride=(1, 1))
+    (dropout): Dropout2d(p=0.1, inplace=False)
+    (linear_c4): Linear(in_features=560, out_features=320, bias=True)
+    (linear_c3): Linear(in_features=364, out_features=320, bias=True)
+    (linear_c2): Linear(in_features=160, out_features=320, bias=True)
+    (linear_fuse): ConvModule(
+      (conv): Conv2d(960, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+    (conv_downsample_2): ConvModule(
+      (conv): Conv2d(180, 360, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+      (bn): _BatchNormXd(360, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+    (conv_downsample_4): ConvModule(
+      (conv): Conv2d(180, 720, kernel_size=(5, 5), stride=(4, 4), padding=(1, 1), bias=False)
+      (bn): _BatchNormXd(720, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+    (edge_enhance): EdgeEnhanceBlock(
+      (sobel_x): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96, bias=False)
+      (sobel_y): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96, bias=False)
+      (fuse_conv): ConvModule(
+        (conv): Conv2d(96, 180, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+    )
+    (freq_vssm): FreqAwareVSSMBlock(
+      (vssm): VSSM()
+      (norm): LayerNorm2d((540,), eps=1e-06, elementwise_affine=True)
+      (proj): Conv2d(540, 540, kernel_size=(1, 1), stride=(1, 1))
+    )
+    (geo_constraint): GeometricConstraint()
+    (reduce_channels): ModuleList(
+      (0): ConvModule(
+        (conv): Conv2d(720, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+      (1): ConvModule(
+        (conv): Conv2d(1440, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+      (2): ConvModule(
+        (conv): Conv2d(2880, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+    )
+    (final_proj): ConvModule(
+      (conv): Conv2d(180, 320, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn): _BatchNormXd(320, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+    (cat_conv): ConvModule(
+      (conv): Conv2d(1860, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+    (short_path): ConvModule(
+      (conv): Conv2d(180, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+    (image_pool): Sequential(
+      (0): AdaptiveAvgPool2d(output_size=1)
+      (1): ConvModule(
+        (conv): Conv2d(180, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+    )
+  )
+  init_cfg={'type': 'Normal', 'std': 0.01, 'override': {'name': 'conv_seg'}}
+)
+2025-12-31 11:41:51,426 - mmseg - INFO - Loaded 2090 images
+2025-12-31 11:41:52,898 - mmseg - INFO - Loaded 560 images
+2025-12-31 11:41:52,898 - mmseg - INFO - Start running, host: root@autodl-container-77254baf5b-5e542721, work_dir: /root/autodl-tmp/SegMAN/segmentation/work_dirs/segman_b_mastr_fog
+2025-12-31 11:41:52,898 - mmseg - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(NORMAL      ) CheckpointHook                     
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+(VERY_LOW    ) TensorboardLoggerHook              
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+(VERY_LOW    ) TensorboardLoggerHook              
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+ -------------------- 
+after_train_iter:
+(ABOVE_NORMAL) GradientCumulativeOptimizerHook    
+(NORMAL      ) CheckpointHook                     
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+(VERY_LOW    ) TensorboardLoggerHook              
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) CheckpointHook                     
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+(VERY_LOW    ) TensorboardLoggerHook              
+ -------------------- 
+before_val_epoch:
+(LOW         ) IterTimerHook                      
+(VERY_LOW    ) TextLoggerHook                     
+(VERY_LOW    ) TensorboardLoggerHook              
+ -------------------- 
+before_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_epoch:
+(VERY_LOW    ) TextLoggerHook                     
+(VERY_LOW    ) TensorboardLoggerHook              
+ -------------------- 
+after_run:
+(VERY_LOW    ) TextLoggerHook                     
+(VERY_LOW    ) TensorboardLoggerHook              
+ -------------------- 
+2025-12-31 11:41:52,899 - mmseg - INFO - workflow: [('train', 1)], max: 80000 iters
+2025-12-31 11:41:52,899 - mmseg - INFO - Checkpoints will be saved to /root/autodl-tmp/SegMAN/segmentation/work_dirs/segman_b_mastr_fog by HardDiskBackend.

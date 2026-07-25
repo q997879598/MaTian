@@ -1,0 +1,30 @@
+Looking in indexes: http://mirrors.aliyun.com/pypi/simple
+Collecting albumentations
+  Downloading http://mirrors.aliyun.com/pypi/packages/8e/64/013409c451a44b61310fb757af4527f3de57fc98a00f40448de28b864290/albumentations-2.0.8-py3-none-any.whl (369 kB)
+Requirement already satisfied: numpy>=1.24.4 in /root/miniconda3/envs/segman/lib/python3.10/site-packages (from albumentations) (1.26.4)
+Collecting scipy>=1.10.0 (from albumentations)
+  Downloading http://mirrors.aliyun.com/pypi/packages/8e/6d/41991e503e51fc1134502694c5fa7a1671501a17ffa12716a4a9151af3df/scipy-1.15.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (37.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 37.7/37.7 MB 18.9 MB/s  0:00:01
+Requirement already satisfied: PyYAML in /root/miniconda3/envs/segman/lib/python3.10/site-packages (from albumentations) (6.0.3)
+Collecting pydantic>=2.9.2 (from albumentations)
+  Downloading http://mirrors.aliyun.com/pypi/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl (463 kB)
+Collecting albucore==0.0.24 (from albumentations)
+  Downloading http://mirrors.aliyun.com/pypi/packages/0a/e2/91f145e1f32428e9e1f21f46a7022ffe63d11f549ee55c3b9265ff5207fc/albucore-0.0.24-py3-none-any.whl (15 kB)
+Requirement already satisfied: opencv-python-headless>=4.9.0.80 in /root/miniconda3/envs/segman/lib/python3.10/site-packages (from albumentations) (4.10.0.84)
+Collecting stringzilla>=3.10.4 (from albucore==0.0.24->albumentations)
+  Downloading http://mirrors.aliyun.com/pypi/packages/8b/8a/346830d5945b2e0124a3d74330e45b5a176caae60a0606cadbf0b93c3e64/stringzilla-4.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl (646 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 646.2/646.2 kB 9.2 MB/s  0:00:00
+Collecting simsimd>=5.9.2 (from albucore==0.0.24->albumentations)
+  Downloading http://mirrors.aliyun.com/pypi/packages/02/85/51e769e3ff00acf7376e58328fb62e980f1dddef9b9189cd4ea8f15264ba/simsimd-6.5.3-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (1.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 12.1 MB/s  0:00:00
+Collecting annotated-types>=0.6.0 (from pydantic>=2.9.2->albumentations)
+  Downloading http://mirrors.aliyun.com/pypi/packages/78/b6/6307fbef88d9b5ee7421e68d78a9f162e0da4900bc5f5793f6d3d0e34fb8/annotated_types-0.7.0-py3-none-any.whl (13 kB)
+Collecting pydantic-core==2.41.5 (from pydantic>=2.9.2->albumentations)
+  Downloading http://mirrors.aliyun.com/pypi/packages/a8/76/7727ef2ffa4b62fcab916686a68a0426b9b790139720e1934e8ba797e238/pydantic_core-2.41.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 20.2 MB/s  0:00:00
+Requirement already satisfied: typing-extensions>=4.14.1 in /root/miniconda3/envs/segman/lib/python3.10/site-packages (from pydantic>=2.9.2->albumentations) (4.15.0)
+Collecting typing-inspection>=0.4.2 (from pydantic>=2.9.2->albumentations)
+  Downloading http://mirrors.aliyun.com/pypi/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl (14 kB)
+Installing collected packages: simsimd, typing-inspection, stringzilla, scipy, pydantic-core, annotated-types, pydantic, albucore, albumentations
+
+Successfully installed albucore-0.0.24 albumentations-2.0.8 annotated-types-0.7.0 pydantic-2.12.5 pydantic-core-2.41.5 scipy-1.15.3 simsimd-6.5.3 stringzilla-4.3.0 typing-inspection-0.4.2

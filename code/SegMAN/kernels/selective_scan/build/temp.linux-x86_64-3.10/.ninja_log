@@ -1,0 +1,10 @@
+# ninja log v5
+1	14486	1763537825934043208	/root/autodl-tmp/SegMAN/kernels/selective_scan/build/temp.linux-x86_64-3.10/csrc/selective_scan/cus/selective_scan_core_fwd.o	ce490c69fbce1a34
+0	24418	1763537835867027866	/root/autodl-tmp/SegMAN/kernels/selective_scan/build/temp.linux-x86_64-3.10/csrc/selective_scan/cus/selective_scan.o	48ace7eab8fe92c0
+0	42880	1763537854297820753	/root/autodl-tmp/SegMAN/kernels/selective_scan/build/temp.linux-x86_64-3.10/csrc/selective_scan/cus/selective_scan_core_bwd.o	b79011903ba58887
+5	13796	1763537868751128721	/root/autodl-tmp/SegMAN/kernels/selective_scan/build/temp.linux-x86_64-3.10/csrc/selective_scan/cusndstate/selective_scan_core_fwd.o	654984a5191ef352
+5	23799	1763537878770702844	/root/autodl-tmp/SegMAN/kernels/selective_scan/build/temp.linux-x86_64-3.10/csrc/selective_scan/cusndstate/selective_scan_ndstate.o	7adfcfcb741817f7
+5	41008	1763537895931748958	/root/autodl-tmp/SegMAN/kernels/selective_scan/build/temp.linux-x86_64-3.10/csrc/selective_scan/cusndstate/selective_scan_core_bwd.o	7f760dafcbd07367
+5	19816	1763537916502932614	/root/autodl-tmp/SegMAN/kernels/selective_scan/build/temp.linux-x86_64-3.10/csrc/selective_scan/cusoflex/selective_scan_core_fwd.o	22a61aca19ac9fb7
+5	22537	1763537919249995719	/root/autodl-tmp/SegMAN/kernels/selective_scan/build/temp.linux-x86_64-3.10/csrc/selective_scan/cusoflex/selective_scan_oflex.o	dbfab547d706b860
+5	65408	1763537962085991265	/root/autodl-tmp/SegMAN/kernels/selective_scan/build/temp.linux-x86_64-3.10/csrc/selective_scan/cusoflex/selective_scan_core_bwd.o	cf12647a73eb69c2

@@ -1,0 +1,1233 @@
+2025-12-24 10:52:26,817 - mmseg - INFO - Multi-processing start method is `None`
+2025-12-24 10:52:26,818 - mmseg - INFO - OpenCV num_threads is `14
+2025-12-24 10:52:26,818 - mmseg - INFO - OMP num threads is 14
+2025-12-24 10:52:26,818 - mmseg - INFO - MKL num threads is 14
+2025-12-24 10:52:26,903 - mmseg - INFO - Environment info:
+------------------------------------------------------------
+sys.platform: linux
+Python: 3.10.19 (main, Oct 21 2025, 16:43:05) [GCC 11.2.0]
+CUDA available: True
+GPU 0: NVIDIA GeForce RTX 3090
+CUDA_HOME: /usr/local/cuda
+NVCC: Cuda compilation tools, release 12.1, V12.1.105
+GCC: gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+PyTorch: 2.1.2+cu121
+PyTorch compiling details: PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201703
+  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v3.1.1 (Git Hash 64f6bcbcbab628e96f33a62c3e975f8535a7bde4)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX512
+  - CUDA Runtime 12.1
+  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_90,code=sm_90
+  - CuDNN 8.9.2
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=12.1, CUDNN_VERSION=8.9.2, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=old-style-cast -Wno-invalid-partial-specialization -Wno-unused-private-field -Wno-aligned-allocation-unavailable -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.1.2, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+TorchVision: 0.16.2+cu121
+OpenCV: 4.11.0
+MMCV: 1.7.2
+MMCV Compiler: GCC 9.3
+MMCV CUDA Compiler: 12.1
+MMSegmentation: 0.30.0+ac60643
+------------------------------------------------------------
+
+2025-12-24 10:52:26,903 - mmseg - INFO - Distributed training: False
+2025-12-24 10:52:27,645 - mmseg - INFO - Config:
+norm_cfg = dict(type='SyncBN', requires_grad=True)
+model = dict(
+    type='EncoderDecoder',
+    pretrained=None,
+    backbone=dict(
+        type='SegMANEncoder_b',
+        style='pytorch',
+        pretrained='/root/autodl-tmp/SegMAN/pretrained/SegMAN_Encoder_b.pth.tar'
+    ),
+    decode_head=dict(
+        type='MaritimeUltimateDecoder',
+        in_channels=[96, 160, 364, 560],
+        in_index=[0, 1, 2, 3],
+        channels=180,
+        dropout_ratio=0.1,
+        num_classes=3,
+        norm_cfg=dict(type='SyncBN', requires_grad=True),
+        align_corners=False,
+        decoder_params=dict(embed_dim=128),
+        loss_decode=[
+            dict(
+                type='CrossEntropyLoss',
+                use_sigmoid=False,
+                loss_weight=1.0,
+                class_weight=[3.0, 1.0, 1.0],
+                avg_non_ignore=True),
+            dict(
+                type='LovaszLoss',
+                loss_type='multi_class',
+                per_image=True,
+                loss_weight=1.0),
+            dict(
+                type='DiceLoss',
+                loss_name='loss_boundary',
+                loss_weight=0.5,
+                class_weight=[3.0, 1.0, 1.0],
+                ignore_index=255)
+        ],
+        feat_proj_dim=320),
+    train_cfg=dict(),
+    test_cfg=dict(mode='whole'))
+dataset_type = 'MaSTr1325Dataset'
+data_root = '/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX'
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+crop_size = (512, 512)
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations'),
+    dict(type='Resize', img_scale=(1325, 954), ratio_range=(0.5, 1.0)),
+    dict(type='RandomCrop', crop_size=(512, 512), cat_max_ratio=0.75),
+    dict(type='RandomFlip', prob=0.5),
+    dict(
+        type='Albu',
+        transforms=[
+            dict(type='ISONoise', p=0.2),
+            dict(type='GaussianBlur', blur_limit=(3, 7), p=0.1)
+        ],
+        keymap=dict(img='image', gt_semantic_seg='mask'),
+        update_pad_shape=False),
+    dict(
+        type='PhotoMetricDistortion',
+        brightness_delta=32,
+        contrast_range=(0.8, 1.2),
+        saturation_range=(0.0, 1.5),
+        hue_delta=18),
+    dict(
+        type='Normalize',
+        mean=[123.675, 116.28, 103.53],
+        std=[58.395, 57.12, 57.375],
+        to_rgb=True),
+    dict(type='Pad', size_divisor=32, pad_val=0, seg_pad_val=255),
+    dict(type='DefaultFormatBundle'),
+    dict(type='Collect', keys=['img', 'gt_semantic_seg'])
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=(1325, 954),
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip'),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32, pad_val=0, seg_pad_val=255),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img'])
+        ])
+]
+data = dict(
+    samples_per_gpu=4,
+    workers_per_gpu=4,
+    train=dict(
+        type='MaSTr1325Dataset',
+        data_root='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX',
+        img_dir='images',
+        ann_dir='masks',
+        split=
+        '/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX/train.txt',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations'),
+            dict(type='Resize', img_scale=(1325, 954), ratio_range=(0.5, 1.0)),
+            dict(type='RandomCrop', crop_size=(512, 512), cat_max_ratio=0.75),
+            dict(type='RandomFlip', prob=0.5),
+            dict(
+                type='Albu',
+                transforms=[
+                    dict(type='ISONoise', p=0.2),
+                    dict(type='GaussianBlur', blur_limit=(3, 7), p=0.1)
+                ],
+                keymap=dict(img='image', gt_semantic_seg='mask'),
+                update_pad_shape=False),
+            dict(
+                type='PhotoMetricDistortion',
+                brightness_delta=32,
+                contrast_range=(0.8, 1.2),
+                saturation_range=(0.0, 1.5),
+                hue_delta=18),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32, pad_val=0, seg_pad_val=255),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_semantic_seg'])
+        ],
+        img_suffix='.jpg',
+        seg_map_suffix='.png'),
+    val=dict(
+        type='MaSTr1325Dataset',
+        data_root='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX',
+        img_dir='images',
+        ann_dir='masks',
+        split='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX/val.txt',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(1325, 954),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(
+                        type='Pad',
+                        size_divisor=32,
+                        pad_val=0,
+                        seg_pad_val=255),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ],
+        img_suffix='.jpg',
+        seg_map_suffix='.png'),
+    test=dict(
+        type='MaSTr1325Dataset',
+        data_root='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX',
+        img_dir='images',
+        ann_dir='masks',
+        split='/root/autodl-tmp/SegMAN/segmentation/data/MaSTr1325_MIX/val.txt',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(1325, 954),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(
+                        type='Pad',
+                        size_divisor=32,
+                        pad_val=0,
+                        seg_pad_val=255),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ],
+        img_suffix='.jpg',
+        seg_map_suffix='.png'))
+log_config = dict(
+    interval=50, hooks=[dict(type='TextLoggerHook', by_epoch=False)])
+dist_params = dict(backend='nccl')
+log_level = 'INFO'
+load_from = None
+resume_from = None
+workflow = [('train', 1)]
+cudnn_benchmark = True
+optimizer = dict(
+    type='AdamW',
+    lr=6e-05,
+    betas=(0.9, 0.999),
+    weight_decay=0.01,
+    paramwise_cfg=dict(
+        custom_keys=dict(
+            pos_block=dict(decay_mult=0.0),
+            norm=dict(decay_mult=0.0),
+            head=dict(lr_mult=10.0))))
+optimizer_config = dict(
+    type='GradientCumulativeOptimizerHook',
+    cumulative_iters=2,
+    grad_clip=dict(max_norm=10.0, norm_type=2))
+lr_config = dict(
+    policy='poly',
+    warmup='linear',
+    warmup_iters=1500,
+    warmup_ratio=1e-06,
+    power=1.0,
+    min_lr=0.0,
+    by_epoch=False)
+runner = dict(type='IterBasedRunner', max_iters=80000)
+checkpoint_config = dict(by_epoch=False, interval=2000, max_keep_ckpts=3)
+evaluation = dict(interval=2000, metric='mIoU', save_best='mIoU')
+find_unused_parameters = False
+work_dir = 'work_dirs/segman_b_mastr_ultimate'
+gpu_ids = [0]
+auto_resume = False
+
+2025-12-24 10:52:27,646 - mmseg - INFO - Set random seed to 1464034991, deterministic: False
+2025-12-24 10:52:29,705 - mmseg - INFO - loaded pretrained weights using state_dict_ema from /root/autodl-tmp/SegMAN/pretrained/SegMAN_Encoder_b.pth.tar
+2025-12-24 10:52:29,943 - mmseg - INFO - EncoderDecoder(
+  (backbone): SegMANEncoder(
+    (patch_embed): Sequential(
+      (0): Conv2d(3, 48, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): GELU(approximate='none')
+      (3): Conv2d(48, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+      (4): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (5): GELU(approximate='none')
+      (6): Conv2d(48, 96, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+      (7): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (8): GELU(approximate='none')
+      (9): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+      (10): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (layers): ModuleList(
+      (0): BasicLayer(
+        (rope): RoPE()
+        (blocks): ModuleList(
+          (0-3): 4 x Block(
+            (cpe1): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+            (norm1): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(96, 288, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(96, 96, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=96)
+              (proj): Conv2d(96, 96, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+                (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 4x21x21])
+            )
+            (cpe2): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+            (norm2): LayerNorm2d((96,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(96, 384, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384)
+              (fc2): Conv2d(384, 96, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): Identity()
+            (layer_scale1): LayerScale(96, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(96, init_value=1e-06, bias=True)
+          )
+        )
+      )
+      (1): Sequential(
+        (0): Conv2d(96, 160, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (2): BasicLayer(
+        (rope): RoPE()
+        (blocks): ModuleList(
+          (0-3): 4 x Block(
+            (cpe1): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (norm1): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(160, 480, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(160, 160, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=160)
+              (proj): Conv2d(160, 160, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+                (1): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 8x17x17])
+            )
+            (cpe2): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (norm2): LayerNorm2d((160,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(160, 640, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=640)
+              (fc2): Conv2d(640, 160, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): Identity()
+            (layer_scale1): LayerScale(160, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(160, init_value=1e-06, bias=True)
+          )
+        )
+      )
+      (3): Sequential(
+        (0): Conv2d(160, 364, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (4): BasicLayer(
+        (rope): RoPE()
+        (blocks): ModuleList(
+          (0-17): 18 x Block(
+            (cpe1): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm1): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(364, 364, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=364)
+              (proj): Conv2d(364, 364, kernel_size=(1, 1), stride=(1, 1))
+              (dwconv): Sequential(
+                (0): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+                (1): BatchNorm2d(364, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+              (ssm): VSSM()
+              (norm): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+              (rpb): ParameterList(  (0): Parameter containing: [torch.float32 of size 13x13x13])
+            )
+            (cpe2): Conv2d(364, 364, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=364)
+            (norm2): LayerNorm2d((364,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(364, 1092, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1092, 1092, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1092)
+              (fc2): Conv2d(1092, 364, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): Identity()
+            (layer_scale1): LayerScale(364, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(364, init_value=1e-06, bias=True)
+          )
+        )
+      )
+      (5): Sequential(
+        (0): Conv2d(364, 560, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(560, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (6): BasicLayer(
+        (rope): RoPE()
+        (blocks): ModuleList(
+          (0-3): 4 x Block(
+            (cpe1): Conv2d(560, 560, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=560)
+            (norm1): LayerNorm2d((560,), eps=1e-06, elementwise_affine=True)
+            (token_mixer): Attention(
+              (qkv): Conv2d(560, 1680, kernel_size=(1, 1), stride=(1, 1))
+              (lepe): Conv2d(560, 560, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=560)
+              (proj): Conv2d(560, 560, kernel_size=(1, 1), stride=(1, 1))
+              (rpb): ParameterList(
+                  (0): Parameter containing: [torch.float32 of size 20x13x13]
+                  (1): Parameter containing: [torch.float32 of size 20x49x49]
+              )
+            )
+            (cpe2): Conv2d(560, 560, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=560)
+            (norm2): LayerNorm2d((560,), eps=1e-06, elementwise_affine=True)
+            (mlp): FFN(
+              (fc1): Conv2d(560, 1680, kernel_size=(1, 1), stride=(1, 1))
+              (act_layer): GELU(approximate='none')
+              (dwconv): Conv2d(1680, 1680, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1680)
+              (fc2): Conv2d(1680, 560, kernel_size=(1, 1), stride=(1, 1))
+              (drop): Identity()
+            )
+            (drop_path): Identity()
+            (layer_scale1): LayerScale(560, init_value=1e-06, bias=True)
+            (layer_scale2): LayerScale(560, init_value=1e-06, bias=True)
+          )
+        )
+      )
+      (7): Identity()
+    )
+  )
+  (decode_head): MaritimeUltimateDecoder(
+    input_transform=multiple_select, ignore_index=255, align_corners=False
+    (loss_decode): ModuleList(
+      (0): CrossEntropyLoss(avg_non_ignore=True)
+      (1): LovaszLoss()
+      (2): DiceLoss()
+    )
+    (conv_seg): Conv2d(180, 3, kernel_size=(1, 1), stride=(1, 1))
+    (dropout): Dropout2d(p=0.1, inplace=False)
+    (texture_extractor): TextureDiffModule(
+      (conv_texture): Sequential(
+        (0): ConvModule(
+          (conv): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96, bias=False)
+          (bn): _BatchNormXd(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (activate): ReLU(inplace=True)
+        )
+        (1): ConvModule(
+          (conv): Conv2d(96, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (activate): ReLU(inplace=True)
+        )
+      )
+    )
+    (linear_c4): Linear(in_features=560, out_features=320, bias=True)
+    (linear_c3): Linear(in_features=364, out_features=320, bias=True)
+    (linear_c2): Linear(in_features=160, out_features=320, bias=True)
+    (linear_fuse): ConvModule(
+      (conv): Conv2d(960, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+    (vertical_mamba): VerticalGatedMamba(
+      (vssm): VSSM()
+      (norm): LayerNorm2d((180,), eps=1e-06, elementwise_affine=True)
+      (proj): Conv2d(180, 180, kernel_size=(1, 1), stride=(1, 1))
+    )
+    (proj_c2): ConvModule(
+      (conv): Conv2d(160, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+    (proj_c3): ConvModule(
+      (conv): Conv2d(364, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+    (proj_c4): ConvModule(
+      (conv): Conv2d(560, 180, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+    (pyramid_3): PyramidRefineBlock(
+      (fusion): ConvModule(
+        (conv): Conv2d(360, 180, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+      (refine): Sequential(
+        (0): ConvModule(
+          (conv): Conv2d(180, 180, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=180, bias=False)
+          (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (activate): ReLU(inplace=True)
+        )
+        (1): ConvModule(
+          (conv): Conv2d(180, 180, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+    )
+    (pyramid_2): PyramidRefineBlock(
+      (fusion): ConvModule(
+        (conv): Conv2d(360, 180, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+      (refine): Sequential(
+        (0): ConvModule(
+          (conv): Conv2d(180, 180, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=180, bias=False)
+          (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (activate): ReLU(inplace=True)
+        )
+        (1): ConvModule(
+          (conv): Conv2d(180, 180, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+    )
+    (pyramid_1): PyramidRefineBlock(
+      (fusion): ConvModule(
+        (conv): Conv2d(360, 180, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+      (refine): Sequential(
+        (0): ConvModule(
+          (conv): Conv2d(180, 180, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=180, bias=False)
+          (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (activate): ReLU(inplace=True)
+        )
+        (1): ConvModule(
+          (conv): Conv2d(180, 180, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+    )
+    (final_conv): Sequential(
+      (0): ConvModule(
+        (conv): Conv2d(180, 180, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn): _BatchNormXd(180, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+      (1): Dropout2d(p=0.1, inplace=False)
+      (2): Conv2d(180, 3, kernel_size=(1, 1), stride=(1, 1))
+    )
+  )
+  init_cfg={'type': 'Normal', 'std': 0.01, 'override': {'name': 'conv_seg'}}
+)
+2025-12-24 10:52:29,958 - mmseg - INFO - Loaded 2120 images
+2025-12-24 10:52:31,172 - mmseg - INFO - Loaded 530 images
+2025-12-24 10:52:31,172 - mmseg - INFO - Start running, host: root@autodl-container-77254baf5b-5e542721, work_dir: /root/autodl-tmp/SegMAN/segmentation/work_dirs/segman_b_mastr_ultimate
+2025-12-24 10:52:31,173 - mmseg - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(NORMAL      ) CheckpointHook                     
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+ -------------------- 
+after_train_iter:
+(ABOVE_NORMAL) GradientCumulativeOptimizerHook    
+(NORMAL      ) CheckpointHook                     
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) CheckpointHook                     
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_val_epoch:
+(LOW         ) IterTimerHook                      
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_epoch:
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+after_run:
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+2025-12-24 10:52:31,173 - mmseg - INFO - workflow: [('train', 1)], max: 80000 iters
+2025-12-24 10:52:31,173 - mmseg - INFO - Checkpoints will be saved to /root/autodl-tmp/SegMAN/segmentation/work_dirs/segman_b_mastr_ultimate by HardDiskBackend.
+2025-12-24 10:52:33,167 - mmseg - WARNING - GradientCumulativeOptimizerHook may slightly decrease performance if the model has BatchNorm layers.
+2025-12-24 10:53:00,121 - mmseg - INFO - Iter [50/80000]	lr: 1.959e-06, eta: 12:44:57, time: 0.574, data_time: 0.013, memory: 17498, decode.loss_ce: 1.3817, decode.loss_lovasz: 0.6712, decode.loss_boundary: 0.5299, decode.acc_seg: 23.3592, loss: 2.5828, grad_norm: 33.0527
+2025-12-24 10:53:24,822 - mmseg - INFO - Iter [100/80000]	lr: 3.955e-06, eta: 11:51:10, time: 0.494, data_time: 0.009, memory: 17498, decode.loss_ce: 1.0357, decode.loss_lovasz: 0.5776, decode.loss_boundary: 0.4160, decode.acc_seg: 55.0076, loss: 2.0293, grad_norm: 33.3723
+2025-12-24 10:53:49,883 - mmseg - INFO - Iter [150/80000]	lr: 5.949e-06, eta: 11:36:09, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.5918, decode.loss_lovasz: 0.4169, decode.loss_boundary: 0.2819, decode.acc_seg: 84.3245, loss: 1.2906, grad_norm: 32.1085
+2025-12-24 10:54:14,351 - mmseg - INFO - Iter [200/80000]	lr: 7.940e-06, eta: 11:24:29, time: 0.489, data_time: 0.009, memory: 17498, decode.loss_ce: 0.3166, decode.loss_lovasz: 0.2725, decode.loss_boundary: 0.1840, decode.acc_seg: 93.9935, loss: 0.7732, grad_norm: 29.5653
+2025-12-24 10:54:39,731 - mmseg - INFO - Iter [250/80000]	lr: 9.929e-06, eta: 11:22:11, time: 0.508, data_time: 0.009, memory: 17498, decode.loss_ce: 0.2160, decode.loss_lovasz: 0.1990, decode.loss_boundary: 0.1297, decode.acc_seg: 96.3672, loss: 0.5447, grad_norm: 26.8239
+2025-12-24 10:55:04,997 - mmseg - INFO - Iter [300/80000]	lr: 1.192e-05, eta: 11:19:59, time: 0.505, data_time: 0.009, memory: 17498, decode.loss_ce: 0.2030, decode.loss_lovasz: 0.1864, decode.loss_boundary: 0.1349, decode.acc_seg: 96.1549, loss: 0.5243, grad_norm: 27.6118
+2025-12-24 10:55:30,137 - mmseg - INFO - Iter [350/80000]	lr: 1.390e-05, eta: 11:17:50, time: 0.503, data_time: 0.009, memory: 17498, decode.loss_ce: 0.1760, decode.loss_lovasz: 0.1649, decode.loss_boundary: 0.1285, decode.acc_seg: 96.5959, loss: 0.4694, grad_norm: 30.3595
+2025-12-24 10:55:56,045 - mmseg - INFO - Iter [400/80000]	lr: 1.588e-05, eta: 11:18:40, time: 0.518, data_time: 0.010, memory: 17498, decode.loss_ce: 0.1642, decode.loss_lovasz: 0.1510, decode.loss_boundary: 0.1203, decode.acc_seg: 96.5365, loss: 0.4355, grad_norm: 29.2844
+2025-12-24 10:56:21,072 - mmseg - INFO - Iter [450/80000]	lr: 1.786e-05, eta: 11:16:36, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.1751, decode.loss_lovasz: 0.1492, decode.loss_boundary: 0.1171, decode.acc_seg: 96.7070, loss: 0.4413, grad_norm: 29.4029
+2025-12-24 10:56:46,198 - mmseg - INFO - Iter [500/80000]	lr: 1.984e-05, eta: 11:15:09, time: 0.503, data_time: 0.009, memory: 17498, decode.loss_ce: 0.1372, decode.loss_lovasz: 0.1234, decode.loss_boundary: 0.1025, decode.acc_seg: 97.7221, loss: 0.3630, grad_norm: 26.9530
+2025-12-24 10:57:13,007 - mmseg - INFO - Iter [550/80000]	lr: 2.181e-05, eta: 11:17:55, time: 0.536, data_time: 0.051, memory: 17498, decode.loss_ce: 0.1352, decode.loss_lovasz: 0.1134, decode.loss_boundary: 0.0955, decode.acc_seg: 97.6146, loss: 0.3441, grad_norm: 24.7835
+2025-12-24 10:57:38,322 - mmseg - INFO - Iter [600/80000]	lr: 2.378e-05, eta: 11:16:52, time: 0.506, data_time: 0.009, memory: 17498, decode.loss_ce: 0.1085, decode.loss_lovasz: 0.0958, decode.loss_boundary: 0.0894, decode.acc_seg: 98.0578, loss: 0.2938, grad_norm: 22.8586
+2025-12-24 10:58:03,283 - mmseg - INFO - Iter [650/80000]	lr: 2.575e-05, eta: 11:15:12, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.1172, decode.loss_lovasz: 0.1083, decode.loss_boundary: 0.1035, decode.acc_seg: 97.7652, loss: 0.3291, grad_norm: 24.4251
+2025-12-24 10:58:28,316 - mmseg - INFO - Iter [700/80000]	lr: 2.772e-05, eta: 11:13:50, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0944, decode.loss_lovasz: 0.0901, decode.loss_boundary: 0.0898, decode.acc_seg: 98.2693, loss: 0.2743, grad_norm: 24.6676
+2025-12-24 10:58:54,092 - mmseg - INFO - Iter [750/80000]	lr: 2.968e-05, eta: 11:13:54, time: 0.516, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0974, decode.loss_lovasz: 0.0939, decode.loss_boundary: 0.0966, decode.acc_seg: 98.0830, loss: 0.2879, grad_norm: 18.9634
+2025-12-24 10:59:18,829 - mmseg - INFO - Iter [800/80000]	lr: 3.164e-05, eta: 11:12:12, time: 0.495, data_time: 0.009, memory: 17498, decode.loss_ce: 0.1090, decode.loss_lovasz: 0.0800, decode.loss_boundary: 0.0834, decode.acc_seg: 98.2137, loss: 0.2724, grad_norm: 19.4255
+2025-12-24 10:59:43,813 - mmseg - INFO - Iter [850/80000]	lr: 3.360e-05, eta: 11:11:02, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0793, decode.loss_lovasz: 0.0725, decode.loss_boundary: 0.0825, decode.acc_seg: 98.7514, loss: 0.2344, grad_norm: 18.2416
+2025-12-24 11:00:10,198 - mmseg - INFO - Iter [900/80000]	lr: 3.556e-05, eta: 11:12:00, time: 0.528, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0790, decode.loss_lovasz: 0.0676, decode.loss_boundary: 0.0764, decode.acc_seg: 98.6135, loss: 0.2229, grad_norm: 14.3023
+2025-12-24 11:00:37,789 - mmseg - INFO - Iter [950/80000]	lr: 3.751e-05, eta: 11:14:30, time: 0.552, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0759, decode.loss_lovasz: 0.0667, decode.loss_boundary: 0.0739, decode.acc_seg: 98.5565, loss: 0.2166, grad_norm: 15.2412
+2025-12-24 11:01:02,878 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 11:01:02,879 - mmseg - INFO - Iter [1000/80000]	lr: 3.946e-05, eta: 11:13:24, time: 0.502, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0708, decode.loss_lovasz: 0.0627, decode.loss_boundary: 0.0684, decode.acc_seg: 98.6805, loss: 0.2019, grad_norm: 18.3665
+2025-12-24 11:01:27,486 - mmseg - INFO - Iter [1050/80000]	lr: 4.141e-05, eta: 11:11:46, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0728, decode.loss_lovasz: 0.0605, decode.loss_boundary: 0.0759, decode.acc_seg: 98.6206, loss: 0.2091, grad_norm: 18.4264
+2025-12-24 11:01:55,120 - mmseg - INFO - Iter [1100/80000]	lr: 4.336e-05, eta: 11:13:51, time: 0.553, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0753, decode.loss_lovasz: 0.0587, decode.loss_boundary: 0.0694, decode.acc_seg: 98.5761, loss: 0.2035, grad_norm: 16.7778
+2025-12-24 11:02:19,938 - mmseg - INFO - Iter [1150/80000]	lr: 4.530e-05, eta: 11:12:30, time: 0.496, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0626, decode.loss_lovasz: 0.0582, decode.loss_boundary: 0.0694, decode.acc_seg: 98.8828, loss: 0.1903, grad_norm: 14.8730
+2025-12-24 11:02:46,237 - mmseg - INFO - Iter [1200/80000]	lr: 4.724e-05, eta: 11:12:52, time: 0.526, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0643, decode.loss_lovasz: 0.0565, decode.loss_boundary: 0.0689, decode.acc_seg: 98.9109, loss: 0.1898, grad_norm: 14.5190
+2025-12-24 11:03:12,211 - mmseg - INFO - Iter [1250/80000]	lr: 4.918e-05, eta: 11:12:48, time: 0.519, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0530, decode.loss_lovasz: 0.0568, decode.loss_boundary: 0.0746, decode.acc_seg: 99.1026, loss: 0.1844, grad_norm: 12.6253
+2025-12-24 11:03:37,824 - mmseg - INFO - Iter [1300/80000]	lr: 5.112e-05, eta: 11:12:22, time: 0.512, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0664, decode.loss_lovasz: 0.0617, decode.loss_boundary: 0.0801, decode.acc_seg: 98.8173, loss: 0.2081, grad_norm: 9.5063
+2025-12-24 11:04:03,699 - mmseg - INFO - Iter [1350/80000]	lr: 5.305e-05, eta: 11:12:10, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0683, decode.loss_lovasz: 0.0542, decode.loss_boundary: 0.0647, decode.acc_seg: 98.5989, loss: 0.1871, grad_norm: 8.7135
+2025-12-24 11:04:28,801 - mmseg - INFO - Iter [1400/80000]	lr: 5.498e-05, eta: 11:11:14, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0465, decode.loss_lovasz: 0.0470, decode.loss_boundary: 0.0652, decode.acc_seg: 99.0739, loss: 0.1587, grad_norm: 6.5207
+2025-12-24 11:04:53,829 - mmseg - INFO - Iter [1450/80000]	lr: 5.691e-05, eta: 11:10:17, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0676, decode.loss_lovasz: 0.0602, decode.loss_boundary: 0.0829, decode.acc_seg: 98.7229, loss: 0.2106, grad_norm: 5.4673
+2025-12-24 11:05:18,672 - mmseg - INFO - Iter [1500/80000]	lr: 5.884e-05, eta: 11:09:11, time: 0.497, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0600, decode.loss_lovasz: 0.0543, decode.loss_boundary: 0.0715, decode.acc_seg: 98.9915, loss: 0.1858, grad_norm: 5.9361
+2025-12-24 11:05:44,382 - mmseg - INFO - Iter [1550/80000]	lr: 5.884e-05, eta: 11:08:53, time: 0.514, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0426, decode.loss_lovasz: 0.0490, decode.loss_boundary: 0.0644, decode.acc_seg: 99.2446, loss: 0.1560, grad_norm: 4.7919
+2025-12-24 11:06:11,413 - mmseg - INFO - Iter [1600/80000]	lr: 5.880e-05, eta: 11:09:38, time: 0.541, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0472, decode.loss_lovasz: 0.0481, decode.loss_boundary: 0.0699, decode.acc_seg: 99.1774, loss: 0.1653, grad_norm: 5.7221
+2025-12-24 11:06:36,435 - mmseg - INFO - Iter [1650/80000]	lr: 5.876e-05, eta: 11:08:44, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0597, decode.loss_lovasz: 0.0453, decode.loss_boundary: 0.0579, decode.acc_seg: 98.9815, loss: 0.1629, grad_norm: 5.5311
+2025-12-24 11:07:02,561 - mmseg - INFO - Iter [1700/80000]	lr: 5.873e-05, eta: 11:08:42, time: 0.523, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0473, decode.loss_lovasz: 0.0422, decode.loss_boundary: 0.0628, decode.acc_seg: 99.2087, loss: 0.1523, grad_norm: 4.7292
+2025-12-24 11:07:27,510 - mmseg - INFO - Iter [1750/80000]	lr: 5.869e-05, eta: 11:07:47, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0788, decode.loss_lovasz: 0.0484, decode.loss_boundary: 0.0721, decode.acc_seg: 98.6745, loss: 0.1993, grad_norm: 7.1429
+2025-12-24 11:07:52,846 - mmseg - INFO - Iter [1800/80000]	lr: 5.865e-05, eta: 11:07:09, time: 0.507, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0366, decode.loss_lovasz: 0.0441, decode.loss_boundary: 0.0633, decode.acc_seg: 99.2982, loss: 0.1440, grad_norm: 7.6150
+2025-12-24 11:08:18,717 - mmseg - INFO - Iter [1850/80000]	lr: 5.861e-05, eta: 11:06:55, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0431, decode.loss_lovasz: 0.0384, decode.loss_boundary: 0.0575, decode.acc_seg: 99.3747, loss: 0.1390, grad_norm: 5.6338
+2025-12-24 11:08:43,822 - mmseg - INFO - Iter [1900/80000]	lr: 5.858e-05, eta: 11:06:09, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0415, decode.loss_lovasz: 0.0365, decode.loss_boundary: 0.0602, decode.acc_seg: 99.2826, loss: 0.1382, grad_norm: 4.7245
+2025-12-24 11:09:09,056 - mmseg - INFO - Iter [1950/80000]	lr: 5.854e-05, eta: 11:05:30, time: 0.505, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0355, decode.loss_lovasz: 0.0311, decode.loss_boundary: 0.0521, decode.acc_seg: 99.4289, loss: 0.1187, grad_norm: 4.0547
+2025-12-24 11:09:34,145 - mmseg - INFO - Saving checkpoint at 2000 iterations
+2025-12-24 11:09:35,517 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 11:09:35,518 - mmseg - INFO - Iter [2000/80000]	lr: 5.850e-05, eta: 11:05:38, time: 0.529, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0566, decode.loss_lovasz: 0.0514, decode.loss_boundary: 0.0718, decode.acc_seg: 99.0259, loss: 0.1798, grad_norm: 4.9885
+2025-12-24 11:11:01,912 - mmseg - INFO - per class results:
+2025-12-24 11:11:01,913 - mmseg - INFO - 
++----------+-------+-------+
+|  Class   |  IoU  |  Acc  |
++----------+-------+-------+
+| Obstacle | 93.31 |  96.1 |
+|  Water   | 94.35 | 94.92 |
+|   Sky    | 95.85 | 99.67 |
++----------+-------+-------+
+2025-12-24 11:11:01,913 - mmseg - INFO - Summary:
+2025-12-24 11:11:01,914 - mmseg - INFO - 
++-------+------+------+
+|  aAcc | mIoU | mAcc |
++-------+------+------+
+| 97.46 | 94.5 | 96.9 |
++-------+------+------+
+2025-12-24 11:11:03,622 - mmseg - INFO - Now best checkpoint is saved as best_mIoU_iter_2000.pth.
+2025-12-24 11:11:03,622 - mmseg - INFO - Best mIoU is 0.9450 at 2000 iter.
+2025-12-24 11:11:03,623 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 11:11:03,623 - mmseg - INFO - Iter(val) [530]	aAcc: 0.9746, mIoU: 0.9450, mAcc: 0.9690, IoU.Obstacle: 0.9331, IoU.Water: 0.9435, IoU.Sky: 0.9585, Acc.Obstacle: 0.9610, Acc.Water: 0.9492, Acc.Sky: 0.9967
+2025-12-24 11:11:28,857 - mmseg - INFO - Iter [2050/80000]	lr: 5.846e-05, eta: 12:00:49, time: 2.267, data_time: 1.771, memory: 17498, decode.loss_ce: 0.0460, decode.loss_lovasz: 0.0462, decode.loss_boundary: 0.0717, decode.acc_seg: 99.1435, loss: 0.1639, grad_norm: 4.5582
+2025-12-24 11:11:54,004 - mmseg - INFO - Iter [2100/80000]	lr: 5.843e-05, eta: 11:58:45, time: 0.503, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0449, decode.loss_lovasz: 0.0395, decode.loss_boundary: 0.0578, decode.acc_seg: 99.3007, loss: 0.1422, grad_norm: 3.9973
+2025-12-24 11:12:21,526 - mmseg - INFO - Iter [2150/80000]	lr: 5.839e-05, eta: 11:58:11, time: 0.550, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0404, decode.loss_lovasz: 0.0391, decode.loss_boundary: 0.0592, decode.acc_seg: 99.2963, loss: 0.1387, grad_norm: 3.8037
+2025-12-24 11:12:47,246 - mmseg - INFO - Iter [2200/80000]	lr: 5.835e-05, eta: 11:56:35, time: 0.514, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0444, decode.loss_lovasz: 0.0407, decode.loss_boundary: 0.0614, decode.acc_seg: 99.2857, loss: 0.1466, grad_norm: 4.1604
+2025-12-24 11:13:12,645 - mmseg - INFO - Iter [2250/80000]	lr: 5.831e-05, eta: 11:54:50, time: 0.508, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0391, decode.loss_lovasz: 0.0383, decode.loss_boundary: 0.0617, decode.acc_seg: 99.2117, loss: 0.1390, grad_norm: 3.3640
+2025-12-24 11:13:38,014 - mmseg - INFO - Iter [2300/80000]	lr: 5.828e-05, eta: 11:53:07, time: 0.507, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0312, decode.loss_lovasz: 0.0263, decode.loss_boundary: 0.0512, decode.acc_seg: 99.5265, loss: 0.1086, grad_norm: 2.2068
+2025-12-24 11:14:03,308 - mmseg - INFO - Iter [2350/80000]	lr: 5.824e-05, eta: 11:51:26, time: 0.506, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0355, decode.loss_lovasz: 0.0341, decode.loss_boundary: 0.0589, decode.acc_seg: 99.4341, loss: 0.1284, grad_norm: 2.9121
+2025-12-24 11:14:29,470 - mmseg - INFO - Iter [2400/80000]	lr: 5.820e-05, eta: 11:50:15, time: 0.523, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0362, decode.loss_lovasz: 0.0369, decode.loss_boundary: 0.0621, decode.acc_seg: 99.3618, loss: 0.1352, grad_norm: 3.8293
+2025-12-24 11:14:55,004 - mmseg - INFO - Iter [2450/80000]	lr: 5.816e-05, eta: 11:48:47, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0293, decode.loss_lovasz: 0.0404, decode.loss_boundary: 0.0610, decode.acc_seg: 99.3968, loss: 0.1307, grad_norm: 4.9723
+2025-12-24 11:15:21,694 - mmseg - INFO - Iter [2500/80000]	lr: 5.813e-05, eta: 11:47:57, time: 0.534, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0328, decode.loss_lovasz: 0.0318, decode.loss_boundary: 0.0540, decode.acc_seg: 99.4524, loss: 0.1186, grad_norm: 4.5713
+2025-12-24 11:15:46,736 - mmseg - INFO - Iter [2550/80000]	lr: 5.809e-05, eta: 11:46:18, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0362, decode.loss_lovasz: 0.0393, decode.loss_boundary: 0.0601, decode.acc_seg: 99.3723, loss: 0.1356, grad_norm: 3.9830
+2025-12-24 11:16:11,791 - mmseg - INFO - Iter [2600/80000]	lr: 5.805e-05, eta: 11:44:42, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0348, decode.loss_lovasz: 0.0371, decode.loss_boundary: 0.0661, decode.acc_seg: 99.4603, loss: 0.1380, grad_norm: 4.6762
+2025-12-24 11:16:37,125 - mmseg - INFO - Iter [2650/80000]	lr: 5.801e-05, eta: 11:43:17, time: 0.507, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0361, decode.loss_lovasz: 0.0323, decode.loss_boundary: 0.0501, decode.acc_seg: 99.4460, loss: 0.1184, grad_norm: 3.8501
+2025-12-24 11:17:05,517 - mmseg - INFO - Iter [2700/80000]	lr: 5.798e-05, eta: 11:43:21, time: 0.568, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0406, decode.loss_lovasz: 0.0406, decode.loss_boundary: 0.0623, decode.acc_seg: 99.2728, loss: 0.1435, grad_norm: 6.8266
+2025-12-24 11:17:30,896 - mmseg - INFO - Iter [2750/80000]	lr: 5.794e-05, eta: 11:42:00, time: 0.508, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0338, decode.loss_lovasz: 0.0283, decode.loss_boundary: 0.0535, decode.acc_seg: 99.4596, loss: 0.1156, grad_norm: 7.7874
+2025-12-24 11:17:56,097 - mmseg - INFO - Iter [2800/80000]	lr: 5.790e-05, eta: 11:40:36, time: 0.504, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0297, decode.loss_lovasz: 0.0350, decode.loss_boundary: 0.0659, decode.acc_seg: 99.5169, loss: 0.1306, grad_norm: 4.0421
+2025-12-24 11:18:21,219 - mmseg - INFO - Iter [2850/80000]	lr: 5.786e-05, eta: 11:39:12, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0350, decode.loss_lovasz: 0.0302, decode.loss_boundary: 0.0578, decode.acc_seg: 99.4689, loss: 0.1231, grad_norm: 2.9742
+2025-12-24 11:18:46,168 - mmseg - INFO - Iter [2900/80000]	lr: 5.783e-05, eta: 11:37:45, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0330, decode.loss_lovasz: 0.0284, decode.loss_boundary: 0.0493, decode.acc_seg: 99.3882, loss: 0.1107, grad_norm: 4.7780
+2025-12-24 11:19:11,721 - mmseg - INFO - Iter [2950/80000]	lr: 5.779e-05, eta: 11:36:36, time: 0.511, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0373, decode.loss_lovasz: 0.0375, decode.loss_boundary: 0.0599, decode.acc_seg: 99.4216, loss: 0.1347, grad_norm: 5.1385
+2025-12-24 11:19:36,946 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 11:19:36,946 - mmseg - INFO - Iter [3000/80000]	lr: 5.775e-05, eta: 11:35:20, time: 0.504, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0416, decode.loss_lovasz: 0.0426, decode.loss_boundary: 0.0669, decode.acc_seg: 99.1289, loss: 0.1511, grad_norm: 4.1449
+2025-12-24 11:20:02,775 - mmseg - INFO - Iter [3050/80000]	lr: 5.771e-05, eta: 11:34:21, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0338, decode.loss_lovasz: 0.0378, decode.loss_boundary: 0.0577, decode.acc_seg: 99.4374, loss: 0.1293, grad_norm: 3.8439
+2025-12-24 11:20:27,585 - mmseg - INFO - Iter [3100/80000]	lr: 5.768e-05, eta: 11:32:58, time: 0.496, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0258, decode.loss_lovasz: 0.0231, decode.loss_boundary: 0.0458, decode.acc_seg: 99.6093, loss: 0.0946, grad_norm: 2.6613
+2025-12-24 11:20:52,519 - mmseg - INFO - Iter [3150/80000]	lr: 5.764e-05, eta: 11:31:40, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0372, decode.loss_lovasz: 0.0358, decode.loss_boundary: 0.0621, decode.acc_seg: 99.4362, loss: 0.1352, grad_norm: 2.5113
+2025-12-24 11:21:20,693 - mmseg - INFO - Iter [3200/80000]	lr: 5.760e-05, eta: 11:31:41, time: 0.563, data_time: 0.055, memory: 17498, decode.loss_ce: 0.0283, decode.loss_lovasz: 0.0280, decode.loss_boundary: 0.0507, decode.acc_seg: 99.4978, loss: 0.1070, grad_norm: 2.8441
+2025-12-24 11:21:45,800 - mmseg - INFO - Iter [3250/80000]	lr: 5.756e-05, eta: 11:30:29, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0391, decode.loss_lovasz: 0.0354, decode.loss_boundary: 0.0594, decode.acc_seg: 99.3164, loss: 0.1339, grad_norm: 2.8857
+2025-12-24 11:22:11,676 - mmseg - INFO - Iter [3300/80000]	lr: 5.753e-05, eta: 11:29:36, time: 0.518, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0359, decode.loss_lovasz: 0.0361, decode.loss_boundary: 0.0563, decode.acc_seg: 99.4627, loss: 0.1283, grad_norm: 2.8687
+2025-12-24 11:22:36,253 - mmseg - INFO - Iter [3350/80000]	lr: 5.749e-05, eta: 11:28:14, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0285, decode.loss_lovasz: 0.0300, decode.loss_boundary: 0.0531, decode.acc_seg: 99.5049, loss: 0.1116, grad_norm: 2.4817
+2025-12-24 11:23:01,163 - mmseg - INFO - Iter [3400/80000]	lr: 5.745e-05, eta: 11:27:02, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0325, decode.loss_lovasz: 0.0344, decode.loss_boundary: 0.0597, decode.acc_seg: 99.4229, loss: 0.1266, grad_norm: 2.7019
+2025-12-24 11:23:26,491 - mmseg - INFO - Iter [3450/80000]	lr: 5.741e-05, eta: 11:26:00, time: 0.507, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0255, decode.loss_lovasz: 0.0306, decode.loss_boundary: 0.0595, decode.acc_seg: 99.5130, loss: 0.1156, grad_norm: 3.0729
+2025-12-24 11:23:51,736 - mmseg - INFO - Iter [3500/80000]	lr: 5.738e-05, eta: 11:24:57, time: 0.505, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0295, decode.loss_lovasz: 0.0321, decode.loss_boundary: 0.0529, decode.acc_seg: 99.4482, loss: 0.1145, grad_norm: 3.3902
+2025-12-24 11:24:17,179 - mmseg - INFO - Iter [3550/80000]	lr: 5.734e-05, eta: 11:23:59, time: 0.509, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0369, decode.loss_lovasz: 0.0330, decode.loss_boundary: 0.0599, decode.acc_seg: 99.4199, loss: 0.1298, grad_norm: 3.2793
+2025-12-24 11:24:42,009 - mmseg - INFO - Iter [3600/80000]	lr: 5.730e-05, eta: 11:22:50, time: 0.497, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0775, decode.loss_lovasz: 0.0413, decode.loss_boundary: 0.0604, decode.acc_seg: 99.1076, loss: 0.1792, grad_norm: 4.4744
+2025-12-24 11:25:07,127 - mmseg - INFO - Iter [3650/80000]	lr: 5.726e-05, eta: 11:21:48, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0322, decode.loss_lovasz: 0.0303, decode.loss_boundary: 0.0503, decode.acc_seg: 99.4384, loss: 0.1128, grad_norm: 4.3784
+2025-12-24 11:25:32,252 - mmseg - INFO - Iter [3700/80000]	lr: 5.723e-05, eta: 11:20:46, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0388, decode.loss_lovasz: 0.0390, decode.loss_boundary: 0.0609, decode.acc_seg: 99.3353, loss: 0.1387, grad_norm: 2.7631
+2025-12-24 11:26:00,105 - mmseg - INFO - Iter [3750/80000]	lr: 5.719e-05, eta: 11:20:42, time: 0.557, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0278, decode.loss_lovasz: 0.0267, decode.loss_boundary: 0.0487, decode.acc_seg: 99.3929, loss: 0.1032, grad_norm: 3.3821
+2025-12-24 11:26:25,593 - mmseg - INFO - Iter [3800/80000]	lr: 5.715e-05, eta: 11:19:49, time: 0.510, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0384, decode.loss_lovasz: 0.0380, decode.loss_boundary: 0.0598, decode.acc_seg: 99.2771, loss: 0.1362, grad_norm: 3.4761
+2025-12-24 11:26:50,399 - mmseg - INFO - Iter [3850/80000]	lr: 5.711e-05, eta: 11:18:43, time: 0.496, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0373, decode.loss_lovasz: 0.0365, decode.loss_boundary: 0.0611, decode.acc_seg: 99.2979, loss: 0.1349, grad_norm: 3.0472
+2025-12-24 11:27:16,073 - mmseg - INFO - Iter [3900/80000]	lr: 5.708e-05, eta: 11:17:56, time: 0.513, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0311, decode.loss_lovasz: 0.0370, decode.loss_boundary: 0.0607, decode.acc_seg: 99.4257, loss: 0.1288, grad_norm: 3.8387
+2025-12-24 11:27:40,800 - mmseg - INFO - Iter [3950/80000]	lr: 5.704e-05, eta: 11:16:51, time: 0.495, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0327, decode.loss_lovasz: 0.0290, decode.loss_boundary: 0.0525, decode.acc_seg: 99.5036, loss: 0.1141, grad_norm: 3.5534
+2025-12-24 11:28:06,319 - mmseg - INFO - Saving checkpoint at 4000 iterations
+2025-12-24 11:28:07,656 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 11:28:07,656 - mmseg - INFO - Iter [4000/80000]	lr: 5.700e-05, eta: 11:16:27, time: 0.537, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0234, decode.loss_lovasz: 0.0224, decode.loss_boundary: 0.0436, decode.acc_seg: 99.6356, loss: 0.0894, grad_norm: 2.4119
+2025-12-24 11:29:31,964 - mmseg - INFO - per class results:
+2025-12-24 11:29:31,965 - mmseg - INFO - 
++----------+-------+-------+
+|  Class   |  IoU  |  Acc  |
++----------+-------+-------+
+| Obstacle | 95.41 |  97.9 |
+|  Water   | 99.36 | 99.65 |
+|   Sky    | 99.47 | 99.72 |
++----------+-------+-------+
+2025-12-24 11:29:31,965 - mmseg - INFO - Summary:
+2025-12-24 11:29:31,965 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 99.55 | 98.08 | 99.09 |
++-------+-------+-------+
+2025-12-24 11:29:32,022 - mmseg - INFO - The previous best checkpoint /root/autodl-tmp/SegMAN/segmentation/work_dirs/segman_b_mastr_ultimate/best_mIoU_iter_2000.pth was removed
+2025-12-24 11:29:33,549 - mmseg - INFO - Now best checkpoint is saved as best_mIoU_iter_4000.pth.
+2025-12-24 11:29:33,550 - mmseg - INFO - Best mIoU is 0.9808 at 4000 iter.
+2025-12-24 11:29:33,550 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 11:29:33,550 - mmseg - INFO - Iter(val) [530]	aAcc: 0.9955, mIoU: 0.9808, mAcc: 0.9909, IoU.Obstacle: 0.9541, IoU.Water: 0.9936, IoU.Sky: 0.9947, Acc.Obstacle: 0.9790, Acc.Water: 0.9965, Acc.Sky: 0.9972
+2025-12-24 11:29:59,463 - mmseg - INFO - Iter [4050/80000]	lr: 5.696e-05, eta: 11:42:36, time: 2.236, data_time: 1.728, memory: 17498, decode.loss_ce: 0.0450, decode.loss_lovasz: 0.0310, decode.loss_boundary: 0.0570, decode.acc_seg: 99.4123, loss: 0.1329, grad_norm: 5.2689
+2025-12-24 11:30:25,472 - mmseg - INFO - Iter [4100/80000]	lr: 5.693e-05, eta: 11:41:36, time: 0.520, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0334, decode.loss_lovasz: 0.0285, decode.loss_boundary: 0.0509, decode.acc_seg: 99.4060, loss: 0.1128, grad_norm: 4.9300
+2025-12-24 11:30:50,093 - mmseg - INFO - Iter [4150/80000]	lr: 5.689e-05, eta: 11:40:12, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0341, decode.loss_lovasz: 0.0323, decode.loss_boundary: 0.0555, decode.acc_seg: 99.4644, loss: 0.1220, grad_norm: 3.2356
+2025-12-24 11:31:15,122 - mmseg - INFO - Iter [4200/80000]	lr: 5.685e-05, eta: 11:38:56, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0308, decode.loss_lovasz: 0.0290, decode.loss_boundary: 0.0475, decode.acc_seg: 99.4558, loss: 0.1074, grad_norm: 1.8258
+2025-12-24 11:31:42,227 - mmseg - INFO - Iter [4250/80000]	lr: 5.681e-05, eta: 11:38:18, time: 0.542, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0369, decode.loss_lovasz: 0.0353, decode.loss_boundary: 0.0584, decode.acc_seg: 99.3242, loss: 0.1306, grad_norm: 4.3401
+2025-12-24 11:32:06,915 - mmseg - INFO - Iter [4300/80000]	lr: 5.678e-05, eta: 11:36:58, time: 0.494, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0269, decode.loss_lovasz: 0.0284, decode.loss_boundary: 0.0505, decode.acc_seg: 99.5686, loss: 0.1059, grad_norm: 4.8964
+2025-12-24 11:32:31,532 - mmseg - INFO - Iter [4350/80000]	lr: 5.674e-05, eta: 11:35:38, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0297, decode.loss_lovasz: 0.0329, decode.loss_boundary: 0.0581, decode.acc_seg: 99.3552, loss: 0.1206, grad_norm: 2.6304
+2025-12-24 11:32:56,412 - mmseg - INFO - Iter [4400/80000]	lr: 5.670e-05, eta: 11:34:24, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0380, decode.loss_lovasz: 0.0293, decode.loss_boundary: 0.0557, decode.acc_seg: 99.4264, loss: 0.1230, grad_norm: 2.2864
+2025-12-24 11:33:21,242 - mmseg - INFO - Iter [4450/80000]	lr: 5.666e-05, eta: 11:33:10, time: 0.497, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0334, decode.loss_lovasz: 0.0289, decode.loss_boundary: 0.0499, decode.acc_seg: 99.4122, loss: 0.1122, grad_norm: 3.2241
+2025-12-24 11:33:45,918 - mmseg - INFO - Iter [4500/80000]	lr: 5.663e-05, eta: 11:31:55, time: 0.494, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0320, decode.loss_lovasz: 0.0248, decode.loss_boundary: 0.0479, decode.acc_seg: 99.5416, loss: 0.1046, grad_norm: 3.3193
+2025-12-24 11:34:11,000 - mmseg - INFO - Iter [4550/80000]	lr: 5.659e-05, eta: 11:30:48, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0321, decode.loss_lovasz: 0.0362, decode.loss_boundary: 0.0641, decode.acc_seg: 99.3955, loss: 0.1324, grad_norm: 2.8913
+2025-12-24 11:34:37,380 - mmseg - INFO - Iter [4600/80000]	lr: 5.655e-05, eta: 11:30:02, time: 0.528, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0169, decode.loss_lovasz: 0.0210, decode.loss_boundary: 0.0443, decode.acc_seg: 99.6975, loss: 0.0822, grad_norm: 2.7872
+2025-12-24 11:35:02,912 - mmseg - INFO - Iter [4650/80000]	lr: 5.651e-05, eta: 11:29:04, time: 0.511, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0248, decode.loss_lovasz: 0.0270, decode.loss_boundary: 0.0520, decode.acc_seg: 99.5848, loss: 0.1038, grad_norm: 2.3624
+2025-12-24 11:35:28,448 - mmseg - INFO - Iter [4700/80000]	lr: 5.648e-05, eta: 11:28:06, time: 0.511, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0247, decode.loss_lovasz: 0.0222, decode.loss_boundary: 0.0483, decode.acc_seg: 99.5676, loss: 0.0952, grad_norm: 2.1285
+2025-12-24 11:35:53,394 - mmseg - INFO - Iter [4750/80000]	lr: 5.644e-05, eta: 11:26:59, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0224, decode.loss_lovasz: 0.0236, decode.loss_boundary: 0.0501, decode.acc_seg: 99.6452, loss: 0.0961, grad_norm: 1.6184
+2025-12-24 11:36:21,015 - mmseg - INFO - Iter [4800/80000]	lr: 5.640e-05, eta: 11:26:35, time: 0.552, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0288, decode.loss_lovasz: 0.0315, decode.loss_boundary: 0.0528, decode.acc_seg: 99.4564, loss: 0.1132, grad_norm: 1.9728
+2025-12-24 11:36:45,792 - mmseg - INFO - Iter [4850/80000]	lr: 5.636e-05, eta: 11:25:28, time: 0.496, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0258, decode.loss_lovasz: 0.0277, decode.loss_boundary: 0.0522, decode.acc_seg: 99.5241, loss: 0.1057, grad_norm: 3.2943
+2025-12-24 11:37:11,277 - mmseg - INFO - Iter [4900/80000]	lr: 5.633e-05, eta: 11:24:31, time: 0.510, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0247, decode.loss_lovasz: 0.0259, decode.loss_boundary: 0.0499, decode.acc_seg: 99.6277, loss: 0.1006, grad_norm: 2.9629
+2025-12-24 11:37:35,892 - mmseg - INFO - Iter [4950/80000]	lr: 5.629e-05, eta: 11:23:23, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0294, decode.loss_lovasz: 0.0316, decode.loss_boundary: 0.0560, decode.acc_seg: 99.5359, loss: 0.1169, grad_norm: 2.0653
+2025-12-24 11:38:00,790 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 11:38:00,790 - mmseg - INFO - Iter [5000/80000]	lr: 5.625e-05, eta: 11:22:19, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0206, decode.loss_lovasz: 0.0240, decode.loss_boundary: 0.0490, decode.acc_seg: 99.6519, loss: 0.0936, grad_norm: 1.9322
+2025-12-24 11:38:25,865 - mmseg - INFO - Iter [5050/80000]	lr: 5.621e-05, eta: 11:21:19, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0227, decode.loss_lovasz: 0.0253, decode.loss_boundary: 0.0483, decode.acc_seg: 99.6096, loss: 0.0963, grad_norm: 2.8597
+2025-12-24 11:38:50,660 - mmseg - INFO - Iter [5100/80000]	lr: 5.618e-05, eta: 11:20:15, time: 0.496, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0307, decode.loss_lovasz: 0.0283, decode.loss_boundary: 0.0492, decode.acc_seg: 99.4292, loss: 0.1083, grad_norm: 3.2685
+2025-12-24 11:39:15,563 - mmseg - INFO - Iter [5150/80000]	lr: 5.614e-05, eta: 11:19:14, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0322, decode.loss_lovasz: 0.0257, decode.loss_boundary: 0.0494, decode.acc_seg: 99.4487, loss: 0.1073, grad_norm: 2.6900
+2025-12-24 11:39:40,880 - mmseg - INFO - Iter [5200/80000]	lr: 5.610e-05, eta: 11:18:19, time: 0.506, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0423, decode.loss_lovasz: 0.0310, decode.loss_boundary: 0.0522, decode.acc_seg: 99.3660, loss: 0.1255, grad_norm: 5.2041
+2025-12-24 11:40:05,700 - mmseg - INFO - Iter [5250/80000]	lr: 5.606e-05, eta: 11:17:18, time: 0.496, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0310, decode.loss_lovasz: 0.0305, decode.loss_boundary: 0.0585, decode.acc_seg: 99.3639, loss: 0.1199, grad_norm: 5.4006
+2025-12-24 11:40:30,991 - mmseg - INFO - Iter [5300/80000]	lr: 5.603e-05, eta: 11:16:24, time: 0.506, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0238, decode.loss_lovasz: 0.0253, decode.loss_boundary: 0.0490, decode.acc_seg: 99.5896, loss: 0.0981, grad_norm: 3.4631
+2025-12-24 11:40:57,935 - mmseg - INFO - Iter [5350/80000]	lr: 5.599e-05, eta: 11:15:54, time: 0.539, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0233, decode.loss_lovasz: 0.0236, decode.loss_boundary: 0.0474, decode.acc_seg: 99.6220, loss: 0.0943, grad_norm: 2.6222
+2025-12-24 11:41:22,708 - mmseg - INFO - Iter [5400/80000]	lr: 5.595e-05, eta: 11:14:54, time: 0.495, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0227, decode.loss_lovasz: 0.0317, decode.loss_boundary: 0.0598, decode.acc_seg: 99.5659, loss: 0.1143, grad_norm: 2.9208
+2025-12-24 11:41:47,377 - mmseg - INFO - Iter [5450/80000]	lr: 5.591e-05, eta: 11:13:53, time: 0.493, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0297, decode.loss_lovasz: 0.0303, decode.loss_boundary: 0.0512, decode.acc_seg: 99.5424, loss: 0.1112, grad_norm: 3.1194
+2025-12-24 11:42:12,288 - mmseg - INFO - Iter [5500/80000]	lr: 5.588e-05, eta: 11:12:56, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0230, decode.loss_lovasz: 0.0242, decode.loss_boundary: 0.0473, decode.acc_seg: 99.5821, loss: 0.0946, grad_norm: 2.0557
+2025-12-24 11:42:36,800 - mmseg - INFO - Iter [5550/80000]	lr: 5.584e-05, eta: 11:11:54, time: 0.490, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0208, decode.loss_lovasz: 0.0245, decode.loss_boundary: 0.0466, decode.acc_seg: 99.6411, loss: 0.0918, grad_norm: 1.6854
+2025-12-24 11:43:01,732 - mmseg - INFO - Iter [5600/80000]	lr: 5.580e-05, eta: 11:10:58, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0306, decode.loss_lovasz: 0.0287, decode.loss_boundary: 0.0534, decode.acc_seg: 99.4326, loss: 0.1128, grad_norm: 1.6571
+2025-12-24 11:43:26,637 - mmseg - INFO - Iter [5650/80000]	lr: 5.576e-05, eta: 11:10:03, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0242, decode.loss_lovasz: 0.0216, decode.loss_boundary: 0.0444, decode.acc_seg: 99.5602, loss: 0.0903, grad_norm: 1.7216
+2025-12-24 11:43:51,072 - mmseg - INFO - Iter [5700/80000]	lr: 5.573e-05, eta: 11:09:02, time: 0.489, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0260, decode.loss_lovasz: 0.0252, decode.loss_boundary: 0.0471, decode.acc_seg: 99.5279, loss: 0.0983, grad_norm: 1.6411
+2025-12-24 11:44:15,978 - mmseg - INFO - Iter [5750/80000]	lr: 5.569e-05, eta: 11:08:08, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0323, decode.loss_lovasz: 0.0313, decode.loss_boundary: 0.0543, decode.acc_seg: 99.4304, loss: 0.1180, grad_norm: 1.9451
+2025-12-24 11:44:40,567 - mmseg - INFO - Iter [5800/80000]	lr: 5.565e-05, eta: 11:07:10, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0233, decode.loss_lovasz: 0.0295, decode.loss_boundary: 0.0548, decode.acc_seg: 99.6425, loss: 0.1076, grad_norm: 2.6560
+2025-12-24 11:45:08,034 - mmseg - INFO - Iter [5850/80000]	lr: 5.561e-05, eta: 11:06:49, time: 0.549, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0233, decode.loss_lovasz: 0.0259, decode.loss_boundary: 0.0485, decode.acc_seg: 99.5803, loss: 0.0977, grad_norm: 2.3018
+2025-12-24 11:45:32,570 - mmseg - INFO - Iter [5900/80000]	lr: 5.558e-05, eta: 11:05:52, time: 0.491, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0288, decode.loss_lovasz: 0.0264, decode.loss_boundary: 0.0508, decode.acc_seg: 99.5521, loss: 0.1060, grad_norm: 3.2517
+2025-12-24 11:45:57,290 - mmseg - INFO - Iter [5950/80000]	lr: 5.554e-05, eta: 11:04:57, time: 0.494, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0285, decode.loss_lovasz: 0.0294, decode.loss_boundary: 0.0530, decode.acc_seg: 99.5022, loss: 0.1110, grad_norm: 3.6083
+2025-12-24 11:46:21,934 - mmseg - INFO - Saving checkpoint at 6000 iterations
+2025-12-24 11:46:23,341 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 11:46:23,341 - mmseg - INFO - Iter [6000/80000]	lr: 5.550e-05, eta: 11:04:19, time: 0.521, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0202, decode.loss_lovasz: 0.0264, decode.loss_boundary: 0.0465, decode.acc_seg: 99.6137, loss: 0.0932, grad_norm: 1.9429
+2025-12-24 11:47:47,092 - mmseg - INFO - per class results:
+2025-12-24 11:47:47,092 - mmseg - INFO - 
++----------+-------+-------+
+|  Class   |  IoU  |  Acc  |
++----------+-------+-------+
+| Obstacle | 95.67 | 98.34 |
+|  Water   | 99.42 | 99.64 |
+|   Sky    | 99.49 | 99.71 |
++----------+-------+-------+
+2025-12-24 11:47:47,092 - mmseg - INFO - Summary:
+2025-12-24 11:47:47,093 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 99.57 | 98.19 | 99.23 |
++-------+-------+-------+
+2025-12-24 11:47:47,142 - mmseg - INFO - The previous best checkpoint /root/autodl-tmp/SegMAN/segmentation/work_dirs/segman_b_mastr_ultimate/best_mIoU_iter_4000.pth was removed
+2025-12-24 11:47:48,483 - mmseg - INFO - Now best checkpoint is saved as best_mIoU_iter_6000.pth.
+2025-12-24 11:47:48,483 - mmseg - INFO - Best mIoU is 0.9819 at 6000 iter.
+2025-12-24 11:47:48,484 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 11:47:48,484 - mmseg - INFO - Iter(val) [530]	aAcc: 0.9957, mIoU: 0.9819, mAcc: 0.9923, IoU.Obstacle: 0.9567, IoU.Water: 0.9942, IoU.Sky: 0.9949, Acc.Obstacle: 0.9834, Acc.Water: 0.9964, Acc.Sky: 0.9971
+2025-12-24 11:48:14,426 - mmseg - INFO - Iter [6050/80000]	lr: 5.546e-05, eta: 11:21:01, time: 2.222, data_time: 1.713, memory: 17498, decode.loss_ce: 0.0202, decode.loss_lovasz: 0.0243, decode.loss_boundary: 0.0512, decode.acc_seg: 99.6721, loss: 0.0958, grad_norm: 1.5115
+2025-12-24 11:48:39,806 - mmseg - INFO - Iter [6100/80000]	lr: 5.543e-05, eta: 11:20:06, time: 0.508, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0230, decode.loss_lovasz: 0.0320, decode.loss_boundary: 0.0599, decode.acc_seg: 99.5743, loss: 0.1148, grad_norm: 1.9754
+2025-12-24 11:49:05,469 - mmseg - INFO - Iter [6150/80000]	lr: 5.539e-05, eta: 11:19:15, time: 0.513, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0217, decode.loss_lovasz: 0.0225, decode.loss_boundary: 0.0498, decode.acc_seg: 99.6455, loss: 0.0940, grad_norm: 2.0613
+2025-12-24 11:49:30,749 - mmseg - INFO - Iter [6200/80000]	lr: 5.535e-05, eta: 11:18:20, time: 0.506, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0183, decode.loss_lovasz: 0.0207, decode.loss_boundary: 0.0453, decode.acc_seg: 99.6796, loss: 0.0843, grad_norm: 1.5077
+2025-12-24 11:49:56,341 - mmseg - INFO - Iter [6250/80000]	lr: 5.531e-05, eta: 11:17:29, time: 0.512, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0229, decode.loss_lovasz: 0.0236, decode.loss_boundary: 0.0497, decode.acc_seg: 99.6230, loss: 0.0962, grad_norm: 1.9255
+2025-12-24 11:50:22,079 - mmseg - INFO - Iter [6300/80000]	lr: 5.528e-05, eta: 11:16:40, time: 0.515, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0263, decode.loss_lovasz: 0.0249, decode.loss_boundary: 0.0503, decode.acc_seg: 99.5581, loss: 0.1014, grad_norm: 3.0296
+2025-12-24 11:50:47,623 - mmseg - INFO - Iter [6350/80000]	lr: 5.524e-05, eta: 11:15:49, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0209, decode.loss_lovasz: 0.0251, decode.loss_boundary: 0.0496, decode.acc_seg: 99.6321, loss: 0.0957, grad_norm: 2.3353
+2025-12-24 11:51:15,624 - mmseg - INFO - Iter [6400/80000]	lr: 5.520e-05, eta: 11:15:27, time: 0.560, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0262, decode.loss_lovasz: 0.0272, decode.loss_boundary: 0.0481, decode.acc_seg: 99.4774, loss: 0.1015, grad_norm: 1.3343
+2025-12-24 11:51:41,794 - mmseg - INFO - Iter [6450/80000]	lr: 5.516e-05, eta: 11:14:44, time: 0.523, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0205, decode.loss_lovasz: 0.0304, decode.loss_boundary: 0.0548, decode.acc_seg: 99.5890, loss: 0.1057, grad_norm: 1.5002
+2025-12-24 11:52:07,050 - mmseg - INFO - Iter [6500/80000]	lr: 5.513e-05, eta: 11:13:51, time: 0.505, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0257, decode.loss_lovasz: 0.0254, decode.loss_boundary: 0.0513, decode.acc_seg: 99.4964, loss: 0.1024, grad_norm: 1.5958
+2025-12-24 11:52:32,984 - mmseg - INFO - Iter [6550/80000]	lr: 5.509e-05, eta: 11:13:05, time: 0.519, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0231, decode.loss_lovasz: 0.0241, decode.loss_boundary: 0.0516, decode.acc_seg: 99.6164, loss: 0.0988, grad_norm: 1.6795
+2025-12-24 11:52:58,991 - mmseg - INFO - Iter [6600/80000]	lr: 5.505e-05, eta: 11:12:21, time: 0.520, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0252, decode.loss_lovasz: 0.0302, decode.loss_boundary: 0.0530, decode.acc_seg: 99.5428, loss: 0.1084, grad_norm: 1.8116
+2025-12-24 11:53:25,975 - mmseg - INFO - Iter [6650/80000]	lr: 5.501e-05, eta: 11:11:48, time: 0.540, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0232, decode.loss_lovasz: 0.0239, decode.loss_boundary: 0.0463, decode.acc_seg: 99.5943, loss: 0.0934, grad_norm: 1.6594
+2025-12-24 11:53:51,964 - mmseg - INFO - Iter [6700/80000]	lr: 5.498e-05, eta: 11:11:05, time: 0.520, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0209, decode.loss_lovasz: 0.0183, decode.loss_boundary: 0.0458, decode.acc_seg: 99.6647, loss: 0.0850, grad_norm: 1.6175
+2025-12-24 11:54:17,580 - mmseg - INFO - Iter [6750/80000]	lr: 5.494e-05, eta: 11:10:17, time: 0.512, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0295, decode.loss_lovasz: 0.0317, decode.loss_boundary: 0.0610, decode.acc_seg: 99.4412, loss: 0.1221, grad_norm: 2.3109
+2025-12-24 11:54:43,136 - mmseg - INFO - Iter [6800/80000]	lr: 5.490e-05, eta: 11:09:29, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0199, decode.loss_lovasz: 0.0241, decode.loss_boundary: 0.0529, decode.acc_seg: 99.6851, loss: 0.0969, grad_norm: 2.0209
+2025-12-24 11:55:09,007 - mmseg - INFO - Iter [6850/80000]	lr: 5.486e-05, eta: 11:08:45, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0222, decode.loss_lovasz: 0.0201, decode.loss_boundary: 0.0432, decode.acc_seg: 99.6227, loss: 0.0855, grad_norm: 1.5453
+2025-12-24 11:55:37,346 - mmseg - INFO - Iter [6900/80000]	lr: 5.483e-05, eta: 11:08:27, time: 0.567, data_time: 0.054, memory: 17498, decode.loss_ce: 0.0157, decode.loss_lovasz: 0.0176, decode.loss_boundary: 0.0440, decode.acc_seg: 99.7099, loss: 0.0774, grad_norm: 1.5207
+2025-12-24 11:56:03,591 - mmseg - INFO - Iter [6950/80000]	lr: 5.479e-05, eta: 11:07:47, time: 0.525, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0202, decode.loss_lovasz: 0.0198, decode.loss_boundary: 0.0463, decode.acc_seg: 99.6749, loss: 0.0864, grad_norm: 1.3526
+2025-12-24 11:56:29,729 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 11:56:29,729 - mmseg - INFO - Iter [7000/80000]	lr: 5.475e-05, eta: 11:07:07, time: 0.523, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0211, decode.loss_lovasz: 0.0215, decode.loss_boundary: 0.0451, decode.acc_seg: 99.6755, loss: 0.0877, grad_norm: 1.1628
+2025-12-24 11:56:55,400 - mmseg - INFO - Iter [7050/80000]	lr: 5.471e-05, eta: 11:06:21, time: 0.513, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0309, decode.loss_lovasz: 0.0284, decode.loss_boundary: 0.0539, decode.acc_seg: 99.5108, loss: 0.1132, grad_norm: 1.2133
+2025-12-24 11:57:20,938 - mmseg - INFO - Iter [7100/80000]	lr: 5.468e-05, eta: 11:05:34, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0271, decode.loss_lovasz: 0.0267, decode.loss_boundary: 0.0504, decode.acc_seg: 99.4430, loss: 0.1042, grad_norm: 1.5431
+2025-12-24 11:57:46,695 - mmseg - INFO - Iter [7150/80000]	lr: 5.464e-05, eta: 11:04:50, time: 0.515, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0291, decode.loss_lovasz: 0.0308, decode.loss_boundary: 0.0533, decode.acc_seg: 99.4285, loss: 0.1132, grad_norm: 1.9560
+2025-12-24 11:58:12,774 - mmseg - INFO - Iter [7200/80000]	lr: 5.460e-05, eta: 11:04:10, time: 0.522, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0273, decode.loss_lovasz: 0.0305, decode.loss_boundary: 0.0565, decode.acc_seg: 99.5409, loss: 0.1143, grad_norm: 2.2785
+2025-12-24 11:58:39,371 - mmseg - INFO - Iter [7250/80000]	lr: 5.456e-05, eta: 11:03:35, time: 0.532, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0197, decode.loss_lovasz: 0.0268, decode.loss_boundary: 0.0530, decode.acc_seg: 99.6560, loss: 0.0994, grad_norm: 2.1173
+2025-12-24 11:59:05,824 - mmseg - INFO - Iter [7300/80000]	lr: 5.453e-05, eta: 11:02:58, time: 0.529, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0248, decode.loss_lovasz: 0.0262, decode.loss_boundary: 0.0483, decode.acc_seg: 99.5256, loss: 0.0993, grad_norm: 1.9296
+2025-12-24 11:59:32,807 - mmseg - INFO - Iter [7350/80000]	lr: 5.449e-05, eta: 11:02:27, time: 0.540, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0219, decode.loss_lovasz: 0.0260, decode.loss_boundary: 0.0481, decode.acc_seg: 99.5942, loss: 0.0961, grad_norm: 1.7775
+2025-12-24 11:59:58,638 - mmseg - INFO - Iter [7400/80000]	lr: 5.445e-05, eta: 11:01:45, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0500, decode.loss_lovasz: 0.0309, decode.loss_boundary: 0.0571, decode.acc_seg: 99.4691, loss: 0.1380, grad_norm: 2.2527
+2025-12-24 12:00:26,858 - mmseg - INFO - Iter [7450/80000]	lr: 5.441e-05, eta: 11:01:26, time: 0.564, data_time: 0.054, memory: 17498, decode.loss_ce: 0.0189, decode.loss_lovasz: 0.0254, decode.loss_boundary: 0.0510, decode.acc_seg: 99.6566, loss: 0.0953, grad_norm: 2.5663
+2025-12-24 12:00:53,053 - mmseg - INFO - Iter [7500/80000]	lr: 5.438e-05, eta: 11:00:48, time: 0.524, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0192, decode.loss_lovasz: 0.0248, decode.loss_boundary: 0.0474, decode.acc_seg: 99.5229, loss: 0.0913, grad_norm: 2.3197
+2025-12-24 12:01:18,718 - mmseg - INFO - Iter [7550/80000]	lr: 5.434e-05, eta: 11:00:04, time: 0.513, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0219, decode.loss_lovasz: 0.0175, decode.loss_boundary: 0.0401, decode.acc_seg: 99.6604, loss: 0.0795, grad_norm: 1.6866
+2025-12-24 12:01:44,549 - mmseg - INFO - Iter [7600/80000]	lr: 5.430e-05, eta: 10:59:22, time: 0.517, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0256, decode.loss_lovasz: 0.0246, decode.loss_boundary: 0.0490, decode.acc_seg: 99.5920, loss: 0.0992, grad_norm: 7.4531
+2025-12-24 12:02:10,401 - mmseg - INFO - Iter [7650/80000]	lr: 5.426e-05, eta: 10:58:41, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0206, decode.loss_lovasz: 0.0260, decode.loss_boundary: 0.0544, decode.acc_seg: 99.5689, loss: 0.1010, grad_norm: 7.9595
+2025-12-24 12:02:36,473 - mmseg - INFO - Iter [7700/80000]	lr: 5.423e-05, eta: 10:58:02, time: 0.521, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0208, decode.loss_lovasz: 0.0231, decode.loss_boundary: 0.0490, decode.acc_seg: 99.6542, loss: 0.0930, grad_norm: 1.7325
+2025-12-24 12:03:03,219 - mmseg - INFO - Iter [7750/80000]	lr: 5.419e-05, eta: 10:57:30, time: 0.535, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0185, decode.loss_lovasz: 0.0163, decode.loss_boundary: 0.0390, decode.acc_seg: 99.6823, loss: 0.0737, grad_norm: 1.0713
+2025-12-24 12:03:29,171 - mmseg - INFO - Iter [7800/80000]	lr: 5.415e-05, eta: 10:56:50, time: 0.519, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0216, decode.loss_lovasz: 0.0268, decode.loss_boundary: 0.0522, decode.acc_seg: 99.6086, loss: 0.1006, grad_norm: 1.3692
+2025-12-24 12:03:55,468 - mmseg - INFO - Iter [7850/80000]	lr: 5.411e-05, eta: 10:56:13, time: 0.526, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0254, decode.loss_lovasz: 0.0258, decode.loss_boundary: 0.0514, decode.acc_seg: 99.5405, loss: 0.1026, grad_norm: 1.8198
+2025-12-24 12:04:21,275 - mmseg - INFO - Iter [7900/80000]	lr: 5.408e-05, eta: 10:55:33, time: 0.516, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0294, decode.loss_lovasz: 0.0242, decode.loss_boundary: 0.0465, decode.acc_seg: 99.4199, loss: 0.1001, grad_norm: 1.6042
+2025-12-24 12:04:47,686 - mmseg - INFO - Iter [7950/80000]	lr: 5.404e-05, eta: 10:54:58, time: 0.528, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0182, decode.loss_lovasz: 0.0279, decode.loss_boundary: 0.0538, decode.acc_seg: 99.6648, loss: 0.1000, grad_norm: 1.5749
+2025-12-24 12:05:15,569 - mmseg - INFO - Saving checkpoint at 8000 iterations
+2025-12-24 12:05:16,752 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 12:05:16,752 - mmseg - INFO - Iter [8000/80000]	lr: 5.400e-05, eta: 10:54:46, time: 0.581, data_time: 0.054, memory: 17498, decode.loss_ce: 0.0236, decode.loss_lovasz: 0.0253, decode.loss_boundary: 0.0526, decode.acc_seg: 99.5559, loss: 0.1015, grad_norm: 2.6816
+2025-12-24 13:27:44,365 - mmseg - INFO - per class results:
+2025-12-24 13:27:44,370 - mmseg - INFO - 
++----------+-------+-------+
+|  Class   |  IoU  |  Acc  |
++----------+-------+-------+
+| Obstacle | 96.55 | 97.59 |
+|  Water   | 99.14 | 99.87 |
+|   Sky    | 99.36 | 99.55 |
++----------+-------+-------+
+2025-12-24 13:27:44,371 - mmseg - INFO - Summary:
+2025-12-24 13:27:44,371 - mmseg - INFO - 
++-------+-------+------+
+|  aAcc |  mIoU | mAcc |
++-------+-------+------+
+| 99.52 | 98.35 | 99.0 |
++-------+-------+------+
+2025-12-24 13:27:44,433 - mmseg - INFO - The previous best checkpoint /root/autodl-tmp/SegMAN/segmentation/work_dirs/segman_b_mastr_ultimate/best_mIoU_iter_6000.pth was removed
+2025-12-24 13:27:46,549 - mmseg - INFO - Now best checkpoint is saved as best_mIoU_iter_8000.pth.
+2025-12-24 13:27:46,550 - mmseg - INFO - Best mIoU is 0.9835 at 8000 iter.
+2025-12-24 13:27:46,551 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 13:27:46,551 - mmseg - INFO - Iter(val) [530]	aAcc: 0.9952, mIoU: 0.9835, mAcc: 0.9900, IoU.Obstacle: 0.9655, IoU.Water: 0.9914, IoU.Sky: 0.9936, Acc.Obstacle: 0.9759, Acc.Water: 0.9987, Acc.Sky: 0.9955
+2025-12-24 13:28:12,180 - mmseg - INFO - Iter [8050/80000]	lr: 5.396e-05, eta: 23:11:25, time: 99.509, data_time: 99.006, memory: 17498, decode.loss_ce: 0.0182, decode.loss_lovasz: 0.0194, decode.loss_boundary: 0.0414, decode.acc_seg: 99.6374, loss: 0.0791, grad_norm: 1.2645
+2025-12-24 13:28:37,520 - mmseg - INFO - Iter [8100/80000]	lr: 5.393e-05, eta: 23:05:37, time: 0.507, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0197, decode.loss_lovasz: 0.0234, decode.loss_boundary: 0.0525, decode.acc_seg: 99.6959, loss: 0.0956, grad_norm: 1.3951
+2025-12-24 13:29:02,801 - mmseg - INFO - Iter [8150/80000]	lr: 5.389e-05, eta: 22:59:52, time: 0.506, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0235, decode.loss_lovasz: 0.0233, decode.loss_boundary: 0.0507, decode.acc_seg: 99.6304, loss: 0.0974, grad_norm: 1.4490
+2025-12-24 13:29:27,711 - mmseg - INFO - Iter [8200/80000]	lr: 5.385e-05, eta: 22:54:08, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0173, decode.loss_lovasz: 0.0197, decode.loss_boundary: 0.0481, decode.acc_seg: 99.7187, loss: 0.0851, grad_norm: 1.1622
+2025-12-24 13:29:52,596 - mmseg - INFO - Iter [8250/80000]	lr: 5.381e-05, eta: 22:48:28, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0250, decode.loss_lovasz: 0.0265, decode.loss_boundary: 0.0528, decode.acc_seg: 99.6305, loss: 0.1043, grad_norm: 1.4180
+2025-12-24 13:30:17,671 - mmseg - INFO - Iter [8300/80000]	lr: 5.378e-05, eta: 22:42:53, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0205, decode.loss_lovasz: 0.0243, decode.loss_boundary: 0.0505, decode.acc_seg: 99.6669, loss: 0.0952, grad_norm: 2.3565
+2025-12-24 13:30:42,699 - mmseg - INFO - Iter [8350/80000]	lr: 5.374e-05, eta: 22:37:22, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0205, decode.loss_lovasz: 0.0240, decode.loss_boundary: 0.0495, decode.acc_seg: 99.6307, loss: 0.0941, grad_norm: 2.4867
+2025-12-24 13:31:07,899 - mmseg - INFO - Iter [8400/80000]	lr: 5.370e-05, eta: 22:31:55, time: 0.504, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0419, decode.loss_lovasz: 0.0323, decode.loss_boundary: 0.0531, decode.acc_seg: 99.2403, loss: 0.1274, grad_norm: 2.9870
+2025-12-24 13:31:33,701 - mmseg - INFO - Iter [8450/80000]	lr: 5.366e-05, eta: 22:26:37, time: 0.516, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0256, decode.loss_lovasz: 0.0233, decode.loss_boundary: 0.0504, decode.acc_seg: 99.4968, loss: 0.0994, grad_norm: 2.8838
+2025-12-24 13:32:01,445 - mmseg - INFO - Iter [8500/80000]	lr: 5.363e-05, eta: 22:21:39, time: 0.555, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0249, decode.loss_lovasz: 0.0243, decode.loss_boundary: 0.0487, decode.acc_seg: 99.5835, loss: 0.0979, grad_norm: 1.5886
+2025-12-24 13:32:26,250 - mmseg - INFO - Iter [8550/80000]	lr: 5.359e-05, eta: 22:16:20, time: 0.496, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0218, decode.loss_lovasz: 0.0190, decode.loss_boundary: 0.0432, decode.acc_seg: 99.5784, loss: 0.0840, grad_norm: 1.1818
+2025-12-24 13:32:51,633 - mmseg - INFO - Iter [8600/80000]	lr: 5.355e-05, eta: 22:11:09, time: 0.508, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0198, decode.loss_lovasz: 0.0285, decode.loss_boundary: 0.0546, decode.acc_seg: 99.6101, loss: 0.1029, grad_norm: 1.3812
+2025-12-24 13:33:16,710 - mmseg - INFO - Iter [8650/80000]	lr: 5.351e-05, eta: 22:05:58, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0257, decode.loss_lovasz: 0.0257, decode.loss_boundary: 0.0517, decode.acc_seg: 99.5005, loss: 0.1032, grad_norm: 1.8641
+2025-12-24 13:33:42,527 - mmseg - INFO - Iter [8700/80000]	lr: 5.348e-05, eta: 22:00:57, time: 0.516, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0213, decode.loss_lovasz: 0.0222, decode.loss_boundary: 0.0487, decode.acc_seg: 99.6526, loss: 0.0922, grad_norm: 1.8038
+2025-12-24 13:34:07,382 - mmseg - INFO - Iter [8750/80000]	lr: 5.344e-05, eta: 21:55:51, time: 0.497, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0199, decode.loss_lovasz: 0.0215, decode.loss_boundary: 0.0443, decode.acc_seg: 99.6645, loss: 0.0857, grad_norm: 1.4034
+2025-12-24 13:34:32,223 - mmseg - INFO - Iter [8800/80000]	lr: 5.340e-05, eta: 21:50:49, time: 0.497, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0185, decode.loss_lovasz: 0.0187, decode.loss_boundary: 0.0418, decode.acc_seg: 99.6900, loss: 0.0790, grad_norm: 1.0839
+2025-12-24 13:34:57,027 - mmseg - INFO - Iter [8850/80000]	lr: 5.336e-05, eta: 21:45:49, time: 0.496, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0186, decode.loss_lovasz: 0.0190, decode.loss_boundary: 0.0462, decode.acc_seg: 99.6497, loss: 0.0838, grad_norm: 1.0378
+2025-12-24 13:35:22,153 - mmseg - INFO - Iter [8900/80000]	lr: 5.333e-05, eta: 21:40:55, time: 0.503, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0213, decode.loss_lovasz: 0.0262, decode.loss_boundary: 0.0528, decode.acc_seg: 99.6181, loss: 0.1004, grad_norm: 1.2875
+2025-12-24 13:35:46,743 - mmseg - INFO - Iter [8950/80000]	lr: 5.329e-05, eta: 21:35:59, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0229, decode.loss_lovasz: 0.0255, decode.loss_boundary: 0.0484, decode.acc_seg: 99.6062, loss: 0.0968, grad_norm: 1.2687
+2025-12-24 13:36:12,051 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 13:36:12,052 - mmseg - INFO - Iter [9000/80000]	lr: 5.325e-05, eta: 21:31:12, time: 0.506, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0175, decode.loss_lovasz: 0.0202, decode.loss_boundary: 0.0431, decode.acc_seg: 99.6722, loss: 0.0808, grad_norm: 1.3117
+2025-12-24 13:36:40,328 - mmseg - INFO - Iter [9050/80000]	lr: 5.321e-05, eta: 21:26:52, time: 0.566, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0188, decode.loss_lovasz: 0.0259, decode.loss_boundary: 0.0530, decode.acc_seg: 99.6702, loss: 0.0976, grad_norm: 1.3632
+2025-12-24 13:37:05,638 - mmseg - INFO - Iter [9100/80000]	lr: 5.318e-05, eta: 21:22:11, time: 0.506, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0187, decode.loss_lovasz: 0.0219, decode.loss_boundary: 0.0465, decode.acc_seg: 99.7063, loss: 0.0871, grad_norm: 1.1629
+2025-12-24 13:37:30,099 - mmseg - INFO - Iter [9150/80000]	lr: 5.314e-05, eta: 21:17:26, time: 0.489, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0192, decode.loss_lovasz: 0.0212, decode.loss_boundary: 0.0460, decode.acc_seg: 99.6762, loss: 0.0864, grad_norm: 1.1345
+2025-12-24 13:37:54,837 - mmseg - INFO - Iter [9200/80000]	lr: 5.310e-05, eta: 21:12:46, time: 0.495, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0183, decode.loss_lovasz: 0.0180, decode.loss_boundary: 0.0424, decode.acc_seg: 99.7009, loss: 0.0787, grad_norm: 1.3316
+2025-12-24 13:38:19,865 - mmseg - INFO - Iter [9250/80000]	lr: 5.306e-05, eta: 21:08:11, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0191, decode.loss_lovasz: 0.0240, decode.loss_boundary: 0.0489, decode.acc_seg: 99.6659, loss: 0.0921, grad_norm: 1.2923
+2025-12-24 13:38:45,406 - mmseg - INFO - Iter [9300/80000]	lr: 5.303e-05, eta: 21:03:42, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0173, decode.loss_lovasz: 0.0183, decode.loss_boundary: 0.0442, decode.acc_seg: 99.7108, loss: 0.0797, grad_norm: 0.9578
+2025-12-24 13:39:10,526 - mmseg - INFO - Iter [9350/80000]	lr: 5.299e-05, eta: 20:59:13, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0246, decode.loss_lovasz: 0.0276, decode.loss_boundary: 0.0530, decode.acc_seg: 99.5392, loss: 0.1052, grad_norm: 1.2979
+2025-12-24 13:39:35,626 - mmseg - INFO - Iter [9400/80000]	lr: 5.295e-05, eta: 20:54:47, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0207, decode.loss_lovasz: 0.0256, decode.loss_boundary: 0.0500, decode.acc_seg: 99.5820, loss: 0.0963, grad_norm: 1.3853
+2025-12-24 13:40:00,760 - mmseg - INFO - Iter [9450/80000]	lr: 5.291e-05, eta: 20:50:23, time: 0.503, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0242, decode.loss_lovasz: 0.0279, decode.loss_boundary: 0.0545, decode.acc_seg: 99.5602, loss: 0.1066, grad_norm: 1.8175
+2025-12-24 13:40:25,766 - mmseg - INFO - Iter [9500/80000]	lr: 5.288e-05, eta: 20:46:01, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0222, decode.loss_lovasz: 0.0256, decode.loss_boundary: 0.0522, decode.acc_seg: 99.5781, loss: 0.1000, grad_norm: 2.0325
+2025-12-24 13:40:53,046 - mmseg - INFO - Iter [9550/80000]	lr: 5.284e-05, eta: 20:41:58, time: 0.546, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0283, decode.loss_lovasz: 0.0256, decode.loss_boundary: 0.0472, decode.acc_seg: 99.4919, loss: 0.1011, grad_norm: 2.5052
+2025-12-24 13:41:18,075 - mmseg - INFO - Iter [9600/80000]	lr: 5.280e-05, eta: 20:37:41, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0204, decode.loss_lovasz: 0.0228, decode.loss_boundary: 0.0486, decode.acc_seg: 99.6705, loss: 0.0918, grad_norm: 2.6697
+2025-12-24 13:41:43,469 - mmseg - INFO - Iter [9650/80000]	lr: 5.276e-05, eta: 20:33:28, time: 0.508, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0236, decode.loss_lovasz: 0.0251, decode.loss_boundary: 0.0475, decode.acc_seg: 99.5995, loss: 0.0962, grad_norm: 2.5139
+2025-12-24 13:42:09,440 - mmseg - INFO - Iter [9700/80000]	lr: 5.273e-05, eta: 20:29:23, time: 0.519, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0314, decode.loss_lovasz: 0.0241, decode.loss_boundary: 0.0498, decode.acc_seg: 99.6279, loss: 0.1053, grad_norm: 2.8285
+2025-12-24 13:42:35,290 - mmseg - INFO - Iter [9750/80000]	lr: 5.269e-05, eta: 20:25:19, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0293, decode.loss_lovasz: 0.0276, decode.loss_boundary: 0.0556, decode.acc_seg: 99.4430, loss: 0.1125, grad_norm: 2.8053
+2025-12-24 13:43:01,424 - mmseg - INFO - Iter [9800/80000]	lr: 5.265e-05, eta: 20:21:19, time: 0.523, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0272, decode.loss_lovasz: 0.0241, decode.loss_boundary: 0.0466, decode.acc_seg: 99.5349, loss: 0.0979, grad_norm: 3.2268
+2025-12-24 13:43:27,125 - mmseg - INFO - Iter [9850/80000]	lr: 5.261e-05, eta: 20:17:18, time: 0.514, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0238, decode.loss_lovasz: 0.0235, decode.loss_boundary: 0.0523, decode.acc_seg: 99.6516, loss: 0.0996, grad_norm: 2.6727
+2025-12-24 13:43:52,927 - mmseg - INFO - Iter [9900/80000]	lr: 5.258e-05, eta: 20:13:20, time: 0.516, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0264, decode.loss_lovasz: 0.0256, decode.loss_boundary: 0.0508, decode.acc_seg: 99.5044, loss: 0.1028, grad_norm: 1.9321
+2025-12-24 13:44:18,470 - mmseg - INFO - Iter [9950/80000]	lr: 5.254e-05, eta: 20:09:22, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0281, decode.loss_lovasz: 0.0239, decode.loss_boundary: 0.0492, decode.acc_seg: 99.5327, loss: 0.1013, grad_norm: 1.7000
+2025-12-24 13:44:43,753 - mmseg - INFO - Saving checkpoint at 10000 iterations
+2025-12-24 13:44:45,679 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 13:44:45,680 - mmseg - INFO - Iter [10000/80000]	lr: 5.250e-05, eta: 20:05:38, time: 0.544, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0247, decode.loss_lovasz: 0.0244, decode.loss_boundary: 0.0488, decode.acc_seg: 99.4916, loss: 0.0980, grad_norm: 1.3942
+2025-12-24 13:46:11,388 - mmseg - INFO - per class results:
+2025-12-24 13:46:11,389 - mmseg - INFO - 
++----------+-------+-------+
+|  Class   |  IoU  |  Acc  |
++----------+-------+-------+
+| Obstacle | 96.76 | 98.08 |
+|  Water   | 99.53 | 99.76 |
+|   Sky    | 99.62 | 99.86 |
++----------+-------+-------+
+2025-12-24 13:46:11,389 - mmseg - INFO - Summary:
+2025-12-24 13:46:11,389 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 99.67 | 98.64 | 99.23 |
++-------+-------+-------+
+2025-12-24 13:46:11,440 - mmseg - INFO - The previous best checkpoint /root/autodl-tmp/SegMAN/segmentation/work_dirs/segman_b_mastr_ultimate/best_mIoU_iter_8000.pth was removed
+2025-12-24 13:46:12,600 - mmseg - INFO - Now best checkpoint is saved as best_mIoU_iter_10000.pth.
+2025-12-24 13:46:12,601 - mmseg - INFO - Best mIoU is 0.9864 at 10000 iter.
+2025-12-24 13:46:12,602 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 13:46:12,602 - mmseg - INFO - Iter(val) [530]	aAcc: 0.9967, mIoU: 0.9864, mAcc: 0.9923, IoU.Obstacle: 0.9676, IoU.Water: 0.9953, IoU.Sky: 0.9962, Acc.Obstacle: 0.9808, Acc.Water: 0.9976, Acc.Sky: 0.9986
+2025-12-24 13:46:38,401 - mmseg - INFO - Iter [10050/80000]	lr: 5.246e-05, eta: 20:11:52, time: 2.254, data_time: 1.749, memory: 17498, decode.loss_ce: 0.0253, decode.loss_lovasz: 0.0343, decode.loss_boundary: 0.0624, decode.acc_seg: 99.5606, loss: 0.1219, grad_norm: 2.8681
+2025-12-24 13:47:06,161 - mmseg - INFO - Iter [10100/80000]	lr: 5.243e-05, eta: 20:08:12, time: 0.555, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0186, decode.loss_lovasz: 0.0197, decode.loss_boundary: 0.0447, decode.acc_seg: 99.6855, loss: 0.0830, grad_norm: 2.3449
+2025-12-24 13:47:31,854 - mmseg - INFO - Iter [10150/80000]	lr: 5.239e-05, eta: 20:04:20, time: 0.514, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0194, decode.loss_lovasz: 0.0251, decode.loss_boundary: 0.0515, decode.acc_seg: 99.6411, loss: 0.0961, grad_norm: 3.0204
+2025-12-24 13:47:57,100 - mmseg - INFO - Iter [10200/80000]	lr: 5.235e-05, eta: 20:00:27, time: 0.505, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0303, decode.loss_lovasz: 0.0246, decode.loss_boundary: 0.0518, decode.acc_seg: 99.5382, loss: 0.1066, grad_norm: 4.7383
+2025-12-24 13:48:22,447 - mmseg - INFO - Iter [10250/80000]	lr: 5.231e-05, eta: 19:56:37, time: 0.507, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0194, decode.loss_lovasz: 0.0223, decode.loss_boundary: 0.0518, decode.acc_seg: 99.5773, loss: 0.0935, grad_norm: 3.5337
+2025-12-24 13:48:48,278 - mmseg - INFO - Iter [10300/80000]	lr: 5.228e-05, eta: 19:52:52, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0226, decode.loss_lovasz: 0.0258, decode.loss_boundary: 0.0492, decode.acc_seg: 99.5665, loss: 0.0977, grad_norm: 1.4481
+2025-12-24 13:49:13,233 - mmseg - INFO - Iter [10350/80000]	lr: 5.224e-05, eta: 19:49:03, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0222, decode.loss_lovasz: 0.0273, decode.loss_boundary: 0.0562, decode.acc_seg: 99.6405, loss: 0.1057, grad_norm: 1.2979
+2025-12-24 13:49:38,256 - mmseg - INFO - Iter [10400/80000]	lr: 5.220e-05, eta: 19:45:17, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0255, decode.loss_lovasz: 0.0241, decode.loss_boundary: 0.0506, decode.acc_seg: 99.5309, loss: 0.1002, grad_norm: 1.5200
+2025-12-24 13:50:03,723 - mmseg - INFO - Iter [10450/80000]	lr: 5.216e-05, eta: 19:41:35, time: 0.509, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0153, decode.loss_lovasz: 0.0190, decode.loss_boundary: 0.0432, decode.acc_seg: 99.7427, loss: 0.0776, grad_norm: 1.3446
+2025-12-24 13:50:29,812 - mmseg - INFO - Iter [10500/80000]	lr: 5.213e-05, eta: 19:37:59, time: 0.522, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0195, decode.loss_lovasz: 0.0206, decode.loss_boundary: 0.0471, decode.acc_seg: 99.6350, loss: 0.0873, grad_norm: 1.3227
+2025-12-24 13:50:55,177 - mmseg - INFO - Iter [10550/80000]	lr: 5.209e-05, eta: 19:34:21, time: 0.507, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0164, decode.loss_lovasz: 0.0186, decode.loss_boundary: 0.0409, decode.acc_seg: 99.6793, loss: 0.0760, grad_norm: 1.1138
+2025-12-24 13:51:20,568 - mmseg - INFO - Iter [10600/80000]	lr: 5.205e-05, eta: 19:30:44, time: 0.508, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0194, decode.loss_lovasz: 0.0223, decode.loss_boundary: 0.0498, decode.acc_seg: 99.6909, loss: 0.0915, grad_norm: 1.6431
+2025-12-24 13:51:47,529 - mmseg - INFO - Iter [10650/80000]	lr: 5.201e-05, eta: 19:27:19, time: 0.539, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0164, decode.loss_lovasz: 0.0193, decode.loss_boundary: 0.0450, decode.acc_seg: 99.7044, loss: 0.0806, grad_norm: 2.3130
+2025-12-24 13:52:12,382 - mmseg - INFO - Iter [10700/80000]	lr: 5.198e-05, eta: 19:23:43, time: 0.497, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0227, decode.loss_lovasz: 0.0244, decode.loss_boundary: 0.0478, decode.acc_seg: 99.6263, loss: 0.0950, grad_norm: 1.9347
+2025-12-24 13:52:37,457 - mmseg - INFO - Iter [10750/80000]	lr: 5.194e-05, eta: 19:20:09, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0221, decode.loss_lovasz: 0.0255, decode.loss_boundary: 0.0502, decode.acc_seg: 99.5746, loss: 0.0977, grad_norm: 1.5886
+2025-12-24 13:53:02,619 - mmseg - INFO - Iter [10800/80000]	lr: 5.190e-05, eta: 19:16:38, time: 0.503, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0175, decode.loss_lovasz: 0.0287, decode.loss_boundary: 0.0543, decode.acc_seg: 99.6747, loss: 0.1006, grad_norm: 1.4387
+2025-12-24 13:53:27,749 - mmseg - INFO - Iter [10850/80000]	lr: 5.186e-05, eta: 19:13:09, time: 0.503, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0219, decode.loss_lovasz: 0.0204, decode.loss_boundary: 0.0488, decode.acc_seg: 99.6298, loss: 0.0912, grad_norm: 1.8971
+2025-12-24 13:53:53,144 - mmseg - INFO - Iter [10900/80000]	lr: 5.183e-05, eta: 19:09:43, time: 0.508, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0146, decode.loss_lovasz: 0.0154, decode.loss_boundary: 0.0402, decode.acc_seg: 99.7654, loss: 0.0703, grad_norm: 1.4474
+2025-12-24 13:54:18,347 - mmseg - INFO - Iter [10950/80000]	lr: 5.179e-05, eta: 19:06:17, time: 0.504, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0226, decode.loss_lovasz: 0.0226, decode.loss_boundary: 0.0476, decode.acc_seg: 99.6420, loss: 0.0928, grad_norm: 0.9520
+2025-12-24 13:54:43,625 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 13:54:43,625 - mmseg - INFO - Iter [11000/80000]	lr: 5.175e-05, eta: 19:02:53, time: 0.506, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0187, decode.loss_lovasz: 0.0208, decode.loss_boundary: 0.0467, decode.acc_seg: 99.6229, loss: 0.0861, grad_norm: 1.2495
+2025-12-24 13:55:09,542 - mmseg - INFO - Iter [11050/80000]	lr: 5.171e-05, eta: 18:59:35, time: 0.518, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0203, decode.loss_lovasz: 0.0194, decode.loss_boundary: 0.0425, decode.acc_seg: 99.6404, loss: 0.0822, grad_norm: 1.1979
+2025-12-24 13:55:34,730 - mmseg - INFO - Iter [11100/80000]	lr: 5.168e-05, eta: 18:56:14, time: 0.504, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0173, decode.loss_lovasz: 0.0232, decode.loss_boundary: 0.0471, decode.acc_seg: 99.7006, loss: 0.0876, grad_norm: 1.0738
+2025-12-24 13:56:02,329 - mmseg - INFO - Iter [11150/80000]	lr: 5.164e-05, eta: 18:53:10, time: 0.552, data_time: 0.054, memory: 17498, decode.loss_ce: 0.0164, decode.loss_lovasz: 0.0235, decode.loss_boundary: 0.0548, decode.acc_seg: 99.6590, loss: 0.0947, grad_norm: 1.3348
+2025-12-24 13:56:27,363 - mmseg - INFO - Iter [11200/80000]	lr: 5.160e-05, eta: 18:49:51, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0177, decode.loss_lovasz: 0.0206, decode.loss_boundary: 0.0455, decode.acc_seg: 99.7181, loss: 0.0837, grad_norm: 1.5809
+2025-12-24 13:56:52,565 - mmseg - INFO - Iter [11250/80000]	lr: 5.156e-05, eta: 18:46:34, time: 0.504, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0171, decode.loss_lovasz: 0.0199, decode.loss_boundary: 0.0452, decode.acc_seg: 99.6913, loss: 0.0822, grad_norm: 1.4627
+2025-12-24 13:57:18,217 - mmseg - INFO - Iter [11300/80000]	lr: 5.153e-05, eta: 18:43:22, time: 0.513, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0226, decode.loss_lovasz: 0.0269, decode.loss_boundary: 0.0520, decode.acc_seg: 99.5716, loss: 0.1015, grad_norm: 1.6151
+2025-12-24 13:57:43,313 - mmseg - INFO - Iter [11350/80000]	lr: 5.149e-05, eta: 18:40:08, time: 0.502, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0168, decode.loss_lovasz: 0.0218, decode.loss_boundary: 0.0516, decode.acc_seg: 99.6254, loss: 0.0902, grad_norm: 1.3213
+2025-12-24 13:58:08,820 - mmseg - INFO - Iter [11400/80000]	lr: 5.145e-05, eta: 18:36:58, time: 0.510, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0178, decode.loss_lovasz: 0.0179, decode.loss_boundary: 0.0414, decode.acc_seg: 99.7338, loss: 0.0771, grad_norm: 0.8999
+2025-12-24 13:58:34,314 - mmseg - INFO - Iter [11450/80000]	lr: 5.141e-05, eta: 18:33:50, time: 0.510, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0230, decode.loss_lovasz: 0.0251, decode.loss_boundary: 0.0501, decode.acc_seg: 99.6448, loss: 0.0981, grad_norm: 0.9817
+2025-12-24 13:59:00,064 - mmseg - INFO - Iter [11500/80000]	lr: 5.138e-05, eta: 18:30:44, time: 0.515, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0182, decode.loss_lovasz: 0.0190, decode.loss_boundary: 0.0453, decode.acc_seg: 99.6639, loss: 0.0825, grad_norm: 1.4978
+2025-12-24 13:59:25,908 - mmseg - INFO - Iter [11550/80000]	lr: 5.134e-05, eta: 18:27:40, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0195, decode.loss_lovasz: 0.0229, decode.loss_boundary: 0.0465, decode.acc_seg: 99.6751, loss: 0.0889, grad_norm: 1.4332
+2025-12-24 13:59:50,659 - mmseg - INFO - Iter [11600/80000]	lr: 5.130e-05, eta: 18:24:31, time: 0.495, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0265, decode.loss_lovasz: 0.0228, decode.loss_boundary: 0.0453, decode.acc_seg: 99.6130, loss: 0.0946, grad_norm: 1.0969
+2025-12-24 14:00:16,424 - mmseg - INFO - Iter [11650/80000]	lr: 5.126e-05, eta: 18:21:30, time: 0.515, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0172, decode.loss_lovasz: 0.0203, decode.loss_boundary: 0.0454, decode.acc_seg: 99.6747, loss: 0.0829, grad_norm: 1.0956
+2025-12-24 14:00:43,988 - mmseg - INFO - Iter [11700/80000]	lr: 5.123e-05, eta: 18:18:40, time: 0.551, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0181, decode.loss_lovasz: 0.0235, decode.loss_boundary: 0.0489, decode.acc_seg: 99.6495, loss: 0.0904, grad_norm: 0.9699
+2025-12-24 14:01:08,963 - mmseg - INFO - Iter [11750/80000]	lr: 5.119e-05, eta: 18:15:37, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0142, decode.loss_lovasz: 0.0139, decode.loss_boundary: 0.0396, decode.acc_seg: 99.7369, loss: 0.0677, grad_norm: 0.8384
+2025-12-24 14:01:34,733 - mmseg - INFO - Iter [11800/80000]	lr: 5.115e-05, eta: 18:12:39, time: 0.515, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0160, decode.loss_lovasz: 0.0219, decode.loss_boundary: 0.0469, decode.acc_seg: 99.7096, loss: 0.0848, grad_norm: 0.7311
+2025-12-24 14:01:59,653 - mmseg - INFO - Iter [11850/80000]	lr: 5.111e-05, eta: 18:09:38, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0147, decode.loss_lovasz: 0.0155, decode.loss_boundary: 0.0485, decode.acc_seg: 99.7627, loss: 0.0787, grad_norm: 1.8892
+2025-12-24 14:02:25,058 - mmseg - INFO - Iter [11900/80000]	lr: 5.108e-05, eta: 18:06:41, time: 0.508, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0213, decode.loss_lovasz: 0.0220, decode.loss_boundary: 0.0476, decode.acc_seg: 99.6559, loss: 0.0909, grad_norm: 2.1172
+2025-12-24 14:02:50,133 - mmseg - INFO - Iter [11950/80000]	lr: 5.104e-05, eta: 18:03:43, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0199, decode.loss_lovasz: 0.0249, decode.loss_boundary: 0.0504, decode.acc_seg: 99.6526, loss: 0.0952, grad_norm: 1.4118
+2025-12-24 14:03:14,607 - mmseg - INFO - Saving checkpoint at 12000 iterations
+2025-12-24 14:03:15,878 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:03:15,878 - mmseg - INFO - Iter [12000/80000]	lr: 5.100e-05, eta: 18:00:50, time: 0.515, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0164, decode.loss_lovasz: 0.0235, decode.loss_boundary: 0.0539, decode.acc_seg: 99.7283, loss: 0.0937, grad_norm: 1.2212
+2025-12-24 14:04:40,180 - mmseg - INFO - per class results:
+2025-12-24 14:04:40,181 - mmseg - INFO - 
++----------+-------+-------+
+|  Class   |  IoU  |  Acc  |
++----------+-------+-------+
+| Obstacle | 96.81 | 97.81 |
+|  Water   | 99.48 | 99.75 |
+|   Sky    |  99.6 | 99.88 |
++----------+-------+-------+
+2025-12-24 14:04:40,181 - mmseg - INFO - Summary:
+2025-12-24 14:04:40,181 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 99.66 | 98.63 | 99.15 |
++-------+-------+-------+
+2025-12-24 14:04:40,182 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:04:40,182 - mmseg - INFO - Iter(val) [530]	aAcc: 0.9966, mIoU: 0.9863, mAcc: 0.9915, IoU.Obstacle: 0.9681, IoU.Water: 0.9948, IoU.Sky: 0.9960, Acc.Obstacle: 0.9781, Acc.Water: 0.9975, Acc.Sky: 0.9988
+2025-12-24 14:05:05,020 - mmseg - INFO - Iter [12050/80000]	lr: 5.096e-05, eta: 18:05:49, time: 2.183, data_time: 1.695, memory: 17498, decode.loss_ce: 0.0178, decode.loss_lovasz: 0.0224, decode.loss_boundary: 0.0499, decode.acc_seg: 99.7150, loss: 0.0901, grad_norm: 0.8846
+2025-12-24 14:05:29,453 - mmseg - INFO - Iter [12100/80000]	lr: 5.093e-05, eta: 18:02:49, time: 0.489, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0220, decode.loss_lovasz: 0.0217, decode.loss_boundary: 0.0437, decode.acc_seg: 99.6058, loss: 0.0873, grad_norm: 2.0908
+2025-12-24 14:05:54,138 - mmseg - INFO - Iter [12150/80000]	lr: 5.089e-05, eta: 17:59:52, time: 0.494, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0184, decode.loss_lovasz: 0.0172, decode.loss_boundary: 0.0412, decode.acc_seg: 99.6892, loss: 0.0768, grad_norm: 2.1096
+2025-12-24 14:06:22,252 - mmseg - INFO - Iter [12200/80000]	lr: 5.085e-05, eta: 17:57:15, time: 0.562, data_time: 0.054, memory: 17498, decode.loss_ce: 0.0175, decode.loss_lovasz: 0.0196, decode.loss_boundary: 0.0463, decode.acc_seg: 99.6890, loss: 0.0834, grad_norm: 1.2033
+2025-12-24 14:06:47,284 - mmseg - INFO - Iter [12250/80000]	lr: 5.081e-05, eta: 17:54:23, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0217, decode.loss_lovasz: 0.0204, decode.loss_boundary: 0.0440, decode.acc_seg: 99.6618, loss: 0.0861, grad_norm: 1.4227
+2025-12-24 14:07:11,960 - mmseg - INFO - Iter [12300/80000]	lr: 5.078e-05, eta: 17:51:29, time: 0.494, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0182, decode.loss_lovasz: 0.0233, decode.loss_boundary: 0.0473, decode.acc_seg: 99.6786, loss: 0.0888, grad_norm: 1.2005
+2025-12-24 14:07:36,523 - mmseg - INFO - Iter [12350/80000]	lr: 5.074e-05, eta: 17:48:36, time: 0.491, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0160, decode.loss_lovasz: 0.0208, decode.loss_boundary: 0.0438, decode.acc_seg: 99.6916, loss: 0.0806, grad_norm: 1.1958
+2025-12-24 14:08:00,903 - mmseg - INFO - Iter [12400/80000]	lr: 5.070e-05, eta: 17:45:43, time: 0.488, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0205, decode.loss_lovasz: 0.0201, decode.loss_boundary: 0.0424, decode.acc_seg: 99.6965, loss: 0.0829, grad_norm: 1.3482
+2025-12-24 14:08:25,392 - mmseg - INFO - Iter [12450/80000]	lr: 5.066e-05, eta: 17:42:52, time: 0.490, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0146, decode.loss_lovasz: 0.0189, decode.loss_boundary: 0.0477, decode.acc_seg: 99.7602, loss: 0.0813, grad_norm: 1.3941
+2025-12-24 14:08:49,590 - mmseg - INFO - Iter [12500/80000]	lr: 5.063e-05, eta: 17:40:01, time: 0.484, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0157, decode.loss_lovasz: 0.0205, decode.loss_boundary: 0.0506, decode.acc_seg: 99.7320, loss: 0.0868, grad_norm: 1.2603
+2025-12-24 14:09:14,159 - mmseg - INFO - Iter [12550/80000]	lr: 5.059e-05, eta: 17:37:12, time: 0.491, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0161, decode.loss_lovasz: 0.0202, decode.loss_boundary: 0.0466, decode.acc_seg: 99.6981, loss: 0.0829, grad_norm: 1.0109
+2025-12-24 14:09:38,754 - mmseg - INFO - Iter [12600/80000]	lr: 5.055e-05, eta: 17:34:25, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0151, decode.loss_lovasz: 0.0170, decode.loss_boundary: 0.0418, decode.acc_seg: 99.7350, loss: 0.0739, grad_norm: 1.2825
+2025-12-24 14:10:03,634 - mmseg - INFO - Iter [12650/80000]	lr: 5.051e-05, eta: 17:31:41, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0157, decode.loss_lovasz: 0.0194, decode.loss_boundary: 0.0460, decode.acc_seg: 99.7392, loss: 0.0811, grad_norm: 1.3442
+2025-12-24 14:10:27,856 - mmseg - INFO - Iter [12700/80000]	lr: 5.048e-05, eta: 17:28:54, time: 0.484, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0166, decode.loss_lovasz: 0.0181, decode.loss_boundary: 0.0441, decode.acc_seg: 99.7141, loss: 0.0788, grad_norm: 1.5480
+2025-12-24 14:10:54,706 - mmseg - INFO - Iter [12750/80000]	lr: 5.044e-05, eta: 17:26:22, time: 0.537, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0199, decode.loss_lovasz: 0.0268, decode.loss_boundary: 0.0566, decode.acc_seg: 99.6530, loss: 0.1033, grad_norm: 1.5486
+2025-12-24 14:11:18,768 - mmseg - INFO - Iter [12800/80000]	lr: 5.040e-05, eta: 17:23:37, time: 0.481, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0180, decode.loss_lovasz: 0.0186, decode.loss_boundary: 0.0422, decode.acc_seg: 99.7209, loss: 0.0788, grad_norm: 1.0910
+2025-12-24 14:11:42,849 - mmseg - INFO - Iter [12850/80000]	lr: 5.036e-05, eta: 17:20:53, time: 0.482, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0144, decode.loss_lovasz: 0.0152, decode.loss_boundary: 0.0408, decode.acc_seg: 99.7613, loss: 0.0704, grad_norm: 0.9372
+2025-12-24 14:12:06,974 - mmseg - INFO - Iter [12900/80000]	lr: 5.033e-05, eta: 17:18:10, time: 0.482, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0157, decode.loss_lovasz: 0.0192, decode.loss_boundary: 0.0449, decode.acc_seg: 99.7372, loss: 0.0798, grad_norm: 0.7736
+2025-12-24 14:12:31,568 - mmseg - INFO - Iter [12950/80000]	lr: 5.029e-05, eta: 17:15:31, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0166, decode.loss_lovasz: 0.0223, decode.loss_boundary: 0.0482, decode.acc_seg: 99.6885, loss: 0.0871, grad_norm: 0.8301
+2025-12-24 14:12:55,804 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:12:55,804 - mmseg - INFO - Iter [13000/80000]	lr: 5.025e-05, eta: 17:12:50, time: 0.485, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0154, decode.loss_lovasz: 0.0204, decode.loss_boundary: 0.0469, decode.acc_seg: 99.7195, loss: 0.0826, grad_norm: 0.8515
+2025-12-24 14:13:20,268 - mmseg - INFO - Iter [13050/80000]	lr: 5.021e-05, eta: 17:10:12, time: 0.489, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0206, decode.loss_lovasz: 0.0208, decode.loss_boundary: 0.0474, decode.acc_seg: 99.6346, loss: 0.0889, grad_norm: 0.8292
+2025-12-24 14:13:44,683 - mmseg - INFO - Iter [13100/80000]	lr: 5.018e-05, eta: 17:07:35, time: 0.488, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0191, decode.loss_lovasz: 0.0198, decode.loss_boundary: 0.0435, decode.acc_seg: 99.6706, loss: 0.0824, grad_norm: 0.9981
+2025-12-24 14:14:09,070 - mmseg - INFO - Iter [13150/80000]	lr: 5.014e-05, eta: 17:04:59, time: 0.488, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0181, decode.loss_lovasz: 0.0213, decode.loss_boundary: 0.0465, decode.acc_seg: 99.6804, loss: 0.0859, grad_norm: 1.4114
+2025-12-24 14:14:33,494 - mmseg - INFO - Iter [13200/80000]	lr: 5.010e-05, eta: 17:02:24, time: 0.488, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0155, decode.loss_lovasz: 0.0193, decode.loss_boundary: 0.0422, decode.acc_seg: 99.6778, loss: 0.0770, grad_norm: 1.2662
+2025-12-24 14:14:57,766 - mmseg - INFO - Iter [13250/80000]	lr: 5.006e-05, eta: 16:59:49, time: 0.485, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0174, decode.loss_lovasz: 0.0169, decode.loss_boundary: 0.0422, decode.acc_seg: 99.6976, loss: 0.0764, grad_norm: 0.8412
+2025-12-24 14:15:24,523 - mmseg - INFO - Iter [13300/80000]	lr: 5.003e-05, eta: 16:57:27, time: 0.535, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0188, decode.loss_lovasz: 0.0213, decode.loss_boundary: 0.0466, decode.acc_seg: 99.6608, loss: 0.0867, grad_norm: 0.7986
+2025-12-24 14:15:48,875 - mmseg - INFO - Iter [13350/80000]	lr: 4.999e-05, eta: 16:54:54, time: 0.487, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0254, decode.loss_lovasz: 0.0180, decode.loss_boundary: 0.0390, decode.acc_seg: 99.6549, loss: 0.0823, grad_norm: 1.9167
+2025-12-24 14:16:13,014 - mmseg - INFO - Iter [13400/80000]	lr: 4.995e-05, eta: 16:52:22, time: 0.483, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0224, decode.loss_lovasz: 0.0249, decode.loss_boundary: 0.0497, decode.acc_seg: 99.5350, loss: 0.0969, grad_norm: 2.2019
+2025-12-24 14:16:37,067 - mmseg - INFO - Iter [13450/80000]	lr: 4.991e-05, eta: 16:49:49, time: 0.481, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0220, decode.loss_lovasz: 0.0231, decode.loss_boundary: 0.0431, decode.acc_seg: 99.6323, loss: 0.0883, grad_norm: 1.6983
+2025-12-24 14:17:01,228 - mmseg - INFO - Iter [13500/80000]	lr: 4.988e-05, eta: 16:47:19, time: 0.483, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0150, decode.loss_lovasz: 0.0177, decode.loss_boundary: 0.0425, decode.acc_seg: 99.7425, loss: 0.0751, grad_norm: 1.3832
+2025-12-24 14:17:25,331 - mmseg - INFO - Iter [13550/80000]	lr: 4.984e-05, eta: 16:44:49, time: 0.482, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0171, decode.loss_lovasz: 0.0219, decode.loss_boundary: 0.0493, decode.acc_seg: 99.6547, loss: 0.0883, grad_norm: 1.0445
+2025-12-24 14:17:49,454 - mmseg - INFO - Iter [13600/80000]	lr: 4.980e-05, eta: 16:42:20, time: 0.482, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0218, decode.loss_lovasz: 0.0252, decode.loss_boundary: 0.0526, decode.acc_seg: 99.6175, loss: 0.0996, grad_norm: 2.6709
+2025-12-24 14:18:13,621 - mmseg - INFO - Iter [13650/80000]	lr: 4.976e-05, eta: 16:39:52, time: 0.483, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0175, decode.loss_lovasz: 0.0224, decode.loss_boundary: 0.0507, decode.acc_seg: 99.6598, loss: 0.0905, grad_norm: 2.5418
+2025-12-24 14:18:38,251 - mmseg - INFO - Iter [13700/80000]	lr: 4.973e-05, eta: 16:37:27, time: 0.493, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0152, decode.loss_lovasz: 0.0169, decode.loss_boundary: 0.0435, decode.acc_seg: 99.7576, loss: 0.0756, grad_norm: 1.0478
+2025-12-24 14:19:03,142 - mmseg - INFO - Iter [13750/80000]	lr: 4.969e-05, eta: 16:35:04, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0284, decode.loss_lovasz: 0.0216, decode.loss_boundary: 0.0462, decode.acc_seg: 99.5051, loss: 0.0963, grad_norm: 1.1880
+2025-12-24 14:19:30,912 - mmseg - INFO - Iter [13800/80000]	lr: 4.965e-05, eta: 16:32:56, time: 0.555, data_time: 0.054, memory: 17498, decode.loss_ce: 0.0161, decode.loss_lovasz: 0.0167, decode.loss_boundary: 0.0413, decode.acc_seg: 99.7282, loss: 0.0740, grad_norm: 1.2489
+2025-12-24 14:19:55,486 - mmseg - INFO - Iter [13850/80000]	lr: 4.961e-05, eta: 16:30:34, time: 0.491, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0230, decode.loss_lovasz: 0.0196, decode.loss_boundary: 0.0426, decode.acc_seg: 99.6087, loss: 0.0851, grad_norm: 1.2307
+2025-12-24 14:20:20,070 - mmseg - INFO - Iter [13900/80000]	lr: 4.958e-05, eta: 16:28:12, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0189, decode.loss_lovasz: 0.0229, decode.loss_boundary: 0.0481, decode.acc_seg: 99.6024, loss: 0.0899, grad_norm: 1.6976
+2025-12-24 14:20:44,914 - mmseg - INFO - Iter [13950/80000]	lr: 4.954e-05, eta: 16:25:52, time: 0.497, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0218, decode.loss_lovasz: 0.0245, decode.loss_boundary: 0.0492, decode.acc_seg: 99.6090, loss: 0.0956, grad_norm: 3.3167
+2025-12-24 14:21:09,731 - mmseg - INFO - Saving checkpoint at 14000 iterations
+2025-12-24 14:21:11,335 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:21:11,335 - mmseg - INFO - Iter [14000/80000]	lr: 4.950e-05, eta: 16:23:41, time: 0.528, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0201, decode.loss_lovasz: 0.0250, decode.loss_boundary: 0.0513, decode.acc_seg: 99.6572, loss: 0.0964, grad_norm: 3.1264
+2025-12-24 14:22:35,238 - mmseg - INFO - per class results:
+2025-12-24 14:22:35,238 - mmseg - INFO - 
++----------+-------+-------+
+|  Class   |  IoU  |  Acc  |
++----------+-------+-------+
+| Obstacle | 96.47 |  98.3 |
+|  Water   |  99.5 | 99.76 |
+|   Sky    | 99.55 | 99.75 |
++----------+-------+-------+
+2025-12-24 14:22:35,239 - mmseg - INFO - Summary:
+2025-12-24 14:22:35,239 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 99.64 | 98.51 | 99.27 |
++-------+-------+-------+
+2025-12-24 14:22:35,239 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:22:35,239 - mmseg - INFO - Iter(val) [530]	aAcc: 0.9964, mIoU: 0.9851, mAcc: 0.9927, IoU.Obstacle: 0.9647, IoU.Water: 0.9950, IoU.Sky: 0.9955, Acc.Obstacle: 0.9830, Acc.Water: 0.9976, Acc.Sky: 0.9975
+2025-12-24 14:23:00,484 - mmseg - INFO - Iter [14050/80000]	lr: 4.946e-05, eta: 16:27:59, time: 2.183, data_time: 1.688, memory: 17498, decode.loss_ce: 0.0202, decode.loss_lovasz: 0.0229, decode.loss_boundary: 0.0523, decode.acc_seg: 99.6387, loss: 0.0954, grad_norm: 1.1113
+2025-12-24 14:23:25,501 - mmseg - INFO - Iter [14100/80000]	lr: 4.943e-05, eta: 16:25:41, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0193, decode.loss_lovasz: 0.0209, decode.loss_boundary: 0.0421, decode.acc_seg: 99.5862, loss: 0.0822, grad_norm: 1.3711
+2025-12-24 14:23:50,341 - mmseg - INFO - Iter [14150/80000]	lr: 4.939e-05, eta: 16:23:23, time: 0.497, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0167, decode.loss_lovasz: 0.0194, decode.loss_boundary: 0.0432, decode.acc_seg: 99.6731, loss: 0.0793, grad_norm: 1.3228
+2025-12-24 14:24:17,165 - mmseg - INFO - Iter [14200/80000]	lr: 4.935e-05, eta: 16:21:14, time: 0.536, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0180, decode.loss_lovasz: 0.0180, decode.loss_boundary: 0.0447, decode.acc_seg: 99.6514, loss: 0.0807, grad_norm: 1.2172
+2025-12-24 14:24:42,468 - mmseg - INFO - Iter [14250/80000]	lr: 4.931e-05, eta: 16:19:00, time: 0.506, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0204, decode.loss_lovasz: 0.0224, decode.loss_boundary: 0.0466, decode.acc_seg: 99.5986, loss: 0.0894, grad_norm: 1.2387
+2025-12-24 14:25:08,063 - mmseg - INFO - Iter [14300/80000]	lr: 4.928e-05, eta: 16:16:48, time: 0.512, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0181, decode.loss_lovasz: 0.0182, decode.loss_boundary: 0.0422, decode.acc_seg: 99.7104, loss: 0.0786, grad_norm: 1.1410
+2025-12-24 14:25:35,995 - mmseg - INFO - Iter [14350/80000]	lr: 4.924e-05, eta: 16:14:47, time: 0.559, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0178, decode.loss_lovasz: 0.0188, decode.loss_boundary: 0.0453, decode.acc_seg: 99.6931, loss: 0.0819, grad_norm: 1.2012
+2025-12-24 14:26:00,537 - mmseg - INFO - Iter [14400/80000]	lr: 4.920e-05, eta: 16:12:31, time: 0.491, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0164, decode.loss_lovasz: 0.0215, decode.loss_boundary: 0.0504, decode.acc_seg: 99.6921, loss: 0.0882, grad_norm: 1.0725
+2025-12-24 14:26:25,114 - mmseg - INFO - Iter [14450/80000]	lr: 4.916e-05, eta: 16:10:16, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0143, decode.loss_lovasz: 0.0199, decode.loss_boundary: 0.0450, decode.acc_seg: 99.7452, loss: 0.0792, grad_norm: 0.8385
+2025-12-24 14:26:49,686 - mmseg - INFO - Iter [14500/80000]	lr: 4.913e-05, eta: 16:08:02, time: 0.491, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0167, decode.loss_lovasz: 0.0172, decode.loss_boundary: 0.0415, decode.acc_seg: 99.7450, loss: 0.0754, grad_norm: 1.1165
+2025-12-24 14:27:14,086 - mmseg - INFO - Iter [14550/80000]	lr: 4.909e-05, eta: 16:05:48, time: 0.488, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0150, decode.loss_lovasz: 0.0184, decode.loss_boundary: 0.0459, decode.acc_seg: 99.7444, loss: 0.0793, grad_norm: 1.1464
+2025-12-24 14:27:39,202 - mmseg - INFO - Iter [14600/80000]	lr: 4.905e-05, eta: 16:03:38, time: 0.502, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0142, decode.loss_lovasz: 0.0168, decode.loss_boundary: 0.0432, decode.acc_seg: 99.7606, loss: 0.0742, grad_norm: 0.7298
+2025-12-24 14:28:04,568 - mmseg - INFO - Iter [14650/80000]	lr: 4.901e-05, eta: 16:01:30, time: 0.507, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0179, decode.loss_lovasz: 0.0233, decode.loss_boundary: 0.0503, decode.acc_seg: 99.6656, loss: 0.0915, grad_norm: 0.8316
+2025-12-24 14:28:29,611 - mmseg - INFO - Iter [14700/80000]	lr: 4.898e-05, eta: 15:59:21, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0238, decode.loss_lovasz: 0.0244, decode.loss_boundary: 0.0493, decode.acc_seg: 99.5517, loss: 0.0975, grad_norm: 1.1203
+2025-12-24 14:28:55,464 - mmseg - INFO - Iter [14750/80000]	lr: 4.894e-05, eta: 15:57:16, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0255, decode.loss_lovasz: 0.0276, decode.loss_boundary: 0.0516, decode.acc_seg: 99.4771, loss: 0.1047, grad_norm: 1.3925
+2025-12-24 14:29:20,742 - mmseg - INFO - Iter [14800/80000]	lr: 4.890e-05, eta: 15:55:10, time: 0.506, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0137, decode.loss_lovasz: 0.0139, decode.loss_boundary: 0.0408, decode.acc_seg: 99.7714, loss: 0.0684, grad_norm: 1.2229
+2025-12-24 14:29:48,262 - mmseg - INFO - Iter [14850/80000]	lr: 4.886e-05, eta: 15:53:14, time: 0.550, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0142, decode.loss_lovasz: 0.0143, decode.loss_boundary: 0.0431, decode.acc_seg: 99.7435, loss: 0.0716, grad_norm: 0.7639
+2025-12-24 14:30:13,261 - mmseg - INFO - Iter [14900/80000]	lr: 4.883e-05, eta: 15:51:07, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0145, decode.loss_lovasz: 0.0190, decode.loss_boundary: 0.0426, decode.acc_seg: 99.7431, loss: 0.0761, grad_norm: 0.9684
+2025-12-24 14:30:39,411 - mmseg - INFO - Iter [14950/80000]	lr: 4.879e-05, eta: 15:49:07, time: 0.523, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0153, decode.loss_lovasz: 0.0189, decode.loss_boundary: 0.0451, decode.acc_seg: 99.7492, loss: 0.0792, grad_norm: 1.2797
+2025-12-24 14:31:05,008 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:31:05,008 - mmseg - INFO - Iter [15000/80000]	lr: 4.875e-05, eta: 15:47:04, time: 0.512, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0208, decode.loss_lovasz: 0.0178, decode.loss_boundary: 0.0447, decode.acc_seg: 99.6476, loss: 0.0832, grad_norm: 1.0272
+2025-12-24 14:31:30,540 - mmseg - INFO - Iter [15050/80000]	lr: 4.871e-05, eta: 15:45:02, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0152, decode.loss_lovasz: 0.0166, decode.loss_boundary: 0.0414, decode.acc_seg: 99.7471, loss: 0.0732, grad_norm: 1.1557
+2025-12-24 14:31:56,331 - mmseg - INFO - Iter [15100/80000]	lr: 4.868e-05, eta: 15:43:01, time: 0.516, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0171, decode.loss_lovasz: 0.0209, decode.loss_boundary: 0.0484, decode.acc_seg: 99.6561, loss: 0.0864, grad_norm: 1.3595
+2025-12-24 14:32:21,939 - mmseg - INFO - Iter [15150/80000]	lr: 4.864e-05, eta: 15:41:01, time: 0.512, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0153, decode.loss_lovasz: 0.0190, decode.loss_boundary: 0.0456, decode.acc_seg: 99.7236, loss: 0.0799, grad_norm: 0.9866
+2025-12-24 14:32:46,940 - mmseg - INFO - Iter [15200/80000]	lr: 4.860e-05, eta: 15:38:58, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0180, decode.loss_lovasz: 0.0220, decode.loss_boundary: 0.0515, decode.acc_seg: 99.6559, loss: 0.0915, grad_norm: 1.1749
+2025-12-24 14:33:13,192 - mmseg - INFO - Iter [15250/80000]	lr: 4.856e-05, eta: 15:37:02, time: 0.525, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0123, decode.loss_lovasz: 0.0150, decode.loss_boundary: 0.0419, decode.acc_seg: 99.7886, loss: 0.0692, grad_norm: 1.2806
+2025-12-24 14:33:38,743 - mmseg - INFO - Iter [15300/80000]	lr: 4.853e-05, eta: 15:35:03, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0212, decode.loss_lovasz: 0.0239, decode.loss_boundary: 0.0511, decode.acc_seg: 99.6202, loss: 0.0962, grad_norm: 1.3481
+2025-12-24 14:34:03,777 - mmseg - INFO - Iter [15350/80000]	lr: 4.849e-05, eta: 15:33:02, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0212, decode.loss_lovasz: 0.0218, decode.loss_boundary: 0.0435, decode.acc_seg: 99.5425, loss: 0.0865, grad_norm: 1.4017
+2025-12-24 14:34:30,690 - mmseg - INFO - Iter [15400/80000]	lr: 4.845e-05, eta: 15:31:10, time: 0.538, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0274, decode.loss_lovasz: 0.0258, decode.loss_boundary: 0.0498, decode.acc_seg: 99.5882, loss: 0.1030, grad_norm: 1.2575
+2025-12-24 14:34:56,298 - mmseg - INFO - Iter [15450/80000]	lr: 4.841e-05, eta: 15:29:13, time: 0.512, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0167, decode.loss_lovasz: 0.0242, decode.loss_boundary: 0.0508, decode.acc_seg: 99.7035, loss: 0.0917, grad_norm: 1.8475
+2025-12-24 14:35:21,473 - mmseg - INFO - Iter [15500/80000]	lr: 4.838e-05, eta: 15:27:15, time: 0.503, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0153, decode.loss_lovasz: 0.0190, decode.loss_boundary: 0.0464, decode.acc_seg: 99.7513, loss: 0.0808, grad_norm: 1.5904
+2025-12-24 14:35:47,508 - mmseg - INFO - Iter [15550/80000]	lr: 4.834e-05, eta: 15:25:21, time: 0.521, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0172, decode.loss_lovasz: 0.0159, decode.loss_boundary: 0.0405, decode.acc_seg: 99.7128, loss: 0.0736, grad_norm: 0.8875
+2025-12-24 14:36:13,753 - mmseg - INFO - Iter [15600/80000]	lr: 4.830e-05, eta: 15:23:29, time: 0.525, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0170, decode.loss_lovasz: 0.0187, decode.loss_boundary: 0.0437, decode.acc_seg: 99.7240, loss: 0.0794, grad_norm: 0.9110
+2025-12-24 14:36:40,552 - mmseg - INFO - Iter [15650/80000]	lr: 4.826e-05, eta: 15:21:39, time: 0.536, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0215, decode.loss_lovasz: 0.0236, decode.loss_boundary: 0.0516, decode.acc_seg: 99.5735, loss: 0.0967, grad_norm: 1.2919
+2025-12-24 14:37:06,363 - mmseg - INFO - Iter [15700/80000]	lr: 4.823e-05, eta: 15:19:46, time: 0.516, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0158, decode.loss_lovasz: 0.0174, decode.loss_boundary: 0.0444, decode.acc_seg: 99.6948, loss: 0.0776, grad_norm: 1.4607
+2025-12-24 14:37:31,179 - mmseg - INFO - Iter [15750/80000]	lr: 4.819e-05, eta: 15:17:49, time: 0.496, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0223, decode.loss_lovasz: 0.0161, decode.loss_boundary: 0.0413, decode.acc_seg: 99.7153, loss: 0.0797, grad_norm: 1.1322
+2025-12-24 14:37:58,053 - mmseg - INFO - Iter [15800/80000]	lr: 4.815e-05, eta: 15:16:01, time: 0.537, data_time: 0.012, memory: 17498, decode.loss_ce: 0.0166, decode.loss_lovasz: 0.0203, decode.loss_boundary: 0.0463, decode.acc_seg: 99.6651, loss: 0.0832, grad_norm: 1.4520
+2025-12-24 14:38:23,887 - mmseg - INFO - Iter [15850/80000]	lr: 4.811e-05, eta: 15:14:10, time: 0.517, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0134, decode.loss_lovasz: 0.0185, decode.loss_boundary: 0.0487, decode.acc_seg: 99.7614, loss: 0.0806, grad_norm: 1.6795
+2025-12-24 14:38:49,106 - mmseg - INFO - Iter [15900/80000]	lr: 4.808e-05, eta: 15:12:16, time: 0.504, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0148, decode.loss_lovasz: 0.0190, decode.loss_boundary: 0.0436, decode.acc_seg: 99.7274, loss: 0.0774, grad_norm: 1.4306
+2025-12-24 14:39:17,270 - mmseg - INFO - Iter [15950/80000]	lr: 4.804e-05, eta: 15:10:35, time: 0.563, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0173, decode.loss_lovasz: 0.0183, decode.loss_boundary: 0.0458, decode.acc_seg: 99.7363, loss: 0.0813, grad_norm: 1.2823
+2025-12-24 14:39:42,255 - mmseg - INFO - Saving checkpoint at 16000 iterations
+2025-12-24 14:39:43,333 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:39:43,334 - mmseg - INFO - Iter [16000/80000]	lr: 4.800e-05, eta: 15:08:46, time: 0.521, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0153, decode.loss_lovasz: 0.0190, decode.loss_boundary: 0.0432, decode.acc_seg: 99.6964, loss: 0.0775, grad_norm: 0.9695
+2025-12-24 14:41:06,796 - mmseg - INFO - per class results:
+2025-12-24 14:41:06,797 - mmseg - INFO - 
++----------+-------+-------+
+|  Class   |  IoU  |  Acc  |
++----------+-------+-------+
+| Obstacle | 96.97 | 97.68 |
+|  Water   | 99.49 | 99.82 |
+|   Sky    |  99.6 | 99.86 |
++----------+-------+-------+
+2025-12-24 14:41:06,797 - mmseg - INFO - Summary:
+2025-12-24 14:41:06,797 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 99.67 | 98.68 | 99.12 |
++-------+-------+-------+
+2025-12-24 14:41:06,843 - mmseg - INFO - The previous best checkpoint /root/autodl-tmp/SegMAN/segmentation/work_dirs/segman_b_mastr_ultimate/best_mIoU_iter_10000.pth was removed
+2025-12-24 14:41:08,118 - mmseg - INFO - Now best checkpoint is saved as best_mIoU_iter_16000.pth.
+2025-12-24 14:41:08,119 - mmseg - INFO - Best mIoU is 0.9868 at 16000 iter.
+2025-12-24 14:41:08,119 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:41:08,119 - mmseg - INFO - Iter(val) [530]	aAcc: 0.9967, mIoU: 0.9868, mAcc: 0.9912, IoU.Obstacle: 0.9697, IoU.Water: 0.9949, IoU.Sky: 0.9960, Acc.Obstacle: 0.9768, Acc.Water: 0.9982, Acc.Sky: 0.9986
+2025-12-24 14:41:32,789 - mmseg - INFO - Iter [16050/80000]	lr: 4.796e-05, eta: 15:12:30, time: 2.189, data_time: 1.704, memory: 17498, decode.loss_ce: 0.0179, decode.loss_lovasz: 0.0168, decode.loss_boundary: 0.0429, decode.acc_seg: 99.7044, loss: 0.0776, grad_norm: 1.2806
+2025-12-24 14:41:57,416 - mmseg - INFO - Iter [16100/80000]	lr: 4.793e-05, eta: 15:10:35, time: 0.493, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0225, decode.loss_lovasz: 0.0217, decode.loss_boundary: 0.0488, decode.acc_seg: 99.6293, loss: 0.0930, grad_norm: 1.2523
+2025-12-24 14:42:22,319 - mmseg - INFO - Iter [16150/80000]	lr: 4.789e-05, eta: 15:08:42, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0154, decode.loss_lovasz: 0.0191, decode.loss_boundary: 0.0471, decode.acc_seg: 99.7209, loss: 0.0816, grad_norm: 0.9891
+2025-12-24 14:42:46,743 - mmseg - INFO - Iter [16200/80000]	lr: 4.785e-05, eta: 15:06:47, time: 0.488, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0152, decode.loss_lovasz: 0.0168, decode.loss_boundary: 0.0445, decode.acc_seg: 99.7549, loss: 0.0765, grad_norm: 0.7846
+2025-12-24 14:43:11,536 - mmseg - INFO - Iter [16250/80000]	lr: 4.781e-05, eta: 15:04:54, time: 0.496, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0150, decode.loss_lovasz: 0.0184, decode.loss_boundary: 0.0447, decode.acc_seg: 99.7158, loss: 0.0781, grad_norm: 0.7568
+2025-12-24 14:43:36,238 - mmseg - INFO - Iter [16300/80000]	lr: 4.778e-05, eta: 15:03:02, time: 0.494, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0146, decode.loss_lovasz: 0.0199, decode.loss_boundary: 0.0491, decode.acc_seg: 99.7593, loss: 0.0836, grad_norm: 0.6376
+2025-12-24 14:44:01,220 - mmseg - INFO - Iter [16350/80000]	lr: 4.774e-05, eta: 15:01:11, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0180, decode.loss_lovasz: 0.0180, decode.loss_boundary: 0.0444, decode.acc_seg: 99.6594, loss: 0.0804, grad_norm: 0.8702
+2025-12-24 14:44:26,135 - mmseg - INFO - Iter [16400/80000]	lr: 4.770e-05, eta: 14:59:20, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0141, decode.loss_lovasz: 0.0166, decode.loss_boundary: 0.0411, decode.acc_seg: 99.7328, loss: 0.0719, grad_norm: 0.9192
+2025-12-24 14:44:53,278 - mmseg - INFO - Iter [16450/80000]	lr: 4.766e-05, eta: 14:57:39, time: 0.543, data_time: 0.051, memory: 17498, decode.loss_ce: 0.0160, decode.loss_lovasz: 0.0185, decode.loss_boundary: 0.0429, decode.acc_seg: 99.6777, loss: 0.0775, grad_norm: 0.7133
+2025-12-24 14:45:18,179 - mmseg - INFO - Iter [16500/80000]	lr: 4.763e-05, eta: 14:55:49, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0134, decode.loss_lovasz: 0.0158, decode.loss_boundary: 0.0439, decode.acc_seg: 99.7852, loss: 0.0731, grad_norm: 0.7465
+2025-12-24 14:45:43,164 - mmseg - INFO - Iter [16550/80000]	lr: 4.759e-05, eta: 14:54:01, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0135, decode.loss_lovasz: 0.0159, decode.loss_boundary: 0.0430, decode.acc_seg: 99.7541, loss: 0.0725, grad_norm: 0.6626
+2025-12-24 14:46:07,916 - mmseg - INFO - Iter [16600/80000]	lr: 4.755e-05, eta: 14:52:11, time: 0.495, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0143, decode.loss_lovasz: 0.0159, decode.loss_boundary: 0.0401, decode.acc_seg: 99.7477, loss: 0.0703, grad_norm: 0.6686
+2025-12-24 14:46:33,338 - mmseg - INFO - Iter [16650/80000]	lr: 4.751e-05, eta: 14:50:25, time: 0.508, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0163, decode.loss_lovasz: 0.0171, decode.loss_boundary: 0.0456, decode.acc_seg: 99.7448, loss: 0.0790, grad_norm: 0.6752
+2025-12-24 14:46:58,247 - mmseg - INFO - Iter [16700/80000]	lr: 4.748e-05, eta: 14:48:38, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0161, decode.loss_lovasz: 0.0227, decode.loss_boundary: 0.0486, decode.acc_seg: 99.7214, loss: 0.0875, grad_norm: 0.6951
+2025-12-24 14:47:23,232 - mmseg - INFO - Iter [16750/80000]	lr: 4.744e-05, eta: 14:46:51, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0127, decode.loss_lovasz: 0.0164, decode.loss_boundary: 0.0426, decode.acc_seg: 99.7806, loss: 0.0717, grad_norm: 0.7856
+2025-12-24 14:47:49,186 - mmseg - INFO - Iter [16800/80000]	lr: 4.740e-05, eta: 14:45:08, time: 0.519, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0146, decode.loss_lovasz: 0.0177, decode.loss_boundary: 0.0433, decode.acc_seg: 99.7496, loss: 0.0755, grad_norm: 0.7161
+2025-12-24 14:48:13,815 - mmseg - INFO - Iter [16850/80000]	lr: 4.736e-05, eta: 14:43:21, time: 0.493, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0164, decode.loss_lovasz: 0.0232, decode.loss_boundary: 0.0549, decode.acc_seg: 99.7015, loss: 0.0945, grad_norm: 0.7290
+2025-12-24 14:48:39,752 - mmseg - INFO - Iter [16900/80000]	lr: 4.733e-05, eta: 14:41:39, time: 0.519, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0141, decode.loss_lovasz: 0.0192, decode.loss_boundary: 0.0463, decode.acc_seg: 99.7500, loss: 0.0797, grad_norm: 0.8855
+2025-12-24 14:49:04,100 - mmseg - INFO - Iter [16950/80000]	lr: 4.729e-05, eta: 14:39:52, time: 0.487, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0151, decode.loss_lovasz: 0.0177, decode.loss_boundary: 0.0479, decode.acc_seg: 99.7518, loss: 0.0807, grad_norm: 0.7953
+2025-12-24 14:49:30,698 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:49:30,699 - mmseg - INFO - Iter [17000/80000]	lr: 4.725e-05, eta: 14:38:14, time: 0.532, data_time: 0.051, memory: 17498, decode.loss_ce: 0.0165, decode.loss_lovasz: 0.0196, decode.loss_boundary: 0.0458, decode.acc_seg: 99.7122, loss: 0.0819, grad_norm: 0.8432
+2025-12-24 14:49:55,672 - mmseg - INFO - Iter [17050/80000]	lr: 4.721e-05, eta: 14:36:30, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0187, decode.loss_lovasz: 0.0230, decode.loss_boundary: 0.0509, decode.acc_seg: 99.6490, loss: 0.0925, grad_norm: 1.2500
+2025-12-24 14:50:22,108 - mmseg - INFO - Iter [17100/80000]	lr: 4.718e-05, eta: 14:34:51, time: 0.529, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0197, decode.loss_lovasz: 0.0212, decode.loss_boundary: 0.0479, decode.acc_seg: 99.6715, loss: 0.0888, grad_norm: 1.8324
+2025-12-24 14:50:49,297 - mmseg - INFO - Iter [17150/80000]	lr: 4.714e-05, eta: 14:33:16, time: 0.544, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0119, decode.loss_lovasz: 0.0167, decode.loss_boundary: 0.0428, decode.acc_seg: 99.7976, loss: 0.0715, grad_norm: 1.6992
+2025-12-24 14:51:14,869 - mmseg - INFO - Iter [17200/80000]	lr: 4.710e-05, eta: 14:31:36, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0149, decode.loss_lovasz: 0.0171, decode.loss_boundary: 0.0492, decode.acc_seg: 99.7468, loss: 0.0812, grad_norm: 1.2141
+2025-12-24 14:51:40,796 - mmseg - INFO - Iter [17250/80000]	lr: 4.706e-05, eta: 14:29:57, time: 0.519, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0174, decode.loss_lovasz: 0.0178, decode.loss_boundary: 0.0419, decode.acc_seg: 99.6947, loss: 0.0771, grad_norm: 1.3780
+2025-12-24 14:52:06,683 - mmseg - INFO - Iter [17300/80000]	lr: 4.703e-05, eta: 14:28:19, time: 0.518, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0196, decode.loss_lovasz: 0.0242, decode.loss_boundary: 0.0520, decode.acc_seg: 99.6229, loss: 0.0958, grad_norm: 1.5209
+2025-12-24 14:52:32,811 - mmseg - INFO - Iter [17350/80000]	lr: 4.699e-05, eta: 14:26:41, time: 0.523, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0180, decode.loss_lovasz: 0.0185, decode.loss_boundary: 0.0449, decode.acc_seg: 99.6805, loss: 0.0813, grad_norm: 1.4196
+2025-12-24 14:52:58,132 - mmseg - INFO - Iter [17400/80000]	lr: 4.695e-05, eta: 14:25:02, time: 0.506, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0204, decode.loss_lovasz: 0.0184, decode.loss_boundary: 0.0410, decode.acc_seg: 99.6081, loss: 0.0798, grad_norm: 3.2030
+2025-12-24 14:53:23,890 - mmseg - INFO - Iter [17450/80000]	lr: 4.691e-05, eta: 14:23:24, time: 0.515, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0227, decode.loss_lovasz: 0.0222, decode.loss_boundary: 0.0452, decode.acc_seg: 99.5746, loss: 0.0901, grad_norm: 3.5179
+2025-12-24 14:53:51,128 - mmseg - INFO - Iter [17500/80000]	lr: 4.688e-05, eta: 14:21:52, time: 0.545, data_time: 0.053, memory: 17498, decode.loss_ce: 0.0146, decode.loss_lovasz: 0.0186, decode.loss_boundary: 0.0484, decode.acc_seg: 99.7447, loss: 0.0816, grad_norm: 1.4092
+2025-12-24 14:54:16,699 - mmseg - INFO - Iter [17550/80000]	lr: 4.684e-05, eta: 14:20:14, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0193, decode.loss_lovasz: 0.0220, decode.loss_boundary: 0.0466, decode.acc_seg: 99.6823, loss: 0.0880, grad_norm: 1.2178
+2025-12-24 14:54:43,243 - mmseg - INFO - Iter [17600/80000]	lr: 4.680e-05, eta: 14:18:40, time: 0.531, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0151, decode.loss_lovasz: 0.0205, decode.loss_boundary: 0.0471, decode.acc_seg: 99.7268, loss: 0.0827, grad_norm: 1.3473
+2025-12-24 14:55:09,929 - mmseg - INFO - Iter [17650/80000]	lr: 4.676e-05, eta: 14:17:08, time: 0.534, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0153, decode.loss_lovasz: 0.0181, decode.loss_boundary: 0.0425, decode.acc_seg: 99.7344, loss: 0.0759, grad_norm: 1.0989
+2025-12-24 14:55:35,906 - mmseg - INFO - Iter [17700/80000]	lr: 4.673e-05, eta: 14:15:33, time: 0.520, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0151, decode.loss_lovasz: 0.0144, decode.loss_boundary: 0.0403, decode.acc_seg: 99.7085, loss: 0.0698, grad_norm: 0.8736
+2025-12-24 14:56:01,135 - mmseg - INFO - Iter [17750/80000]	lr: 4.669e-05, eta: 14:13:55, time: 0.505, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0143, decode.loss_lovasz: 0.0230, decode.loss_boundary: 0.0519, decode.acc_seg: 99.7453, loss: 0.0891, grad_norm: 1.0801
+2025-12-24 14:56:26,628 - mmseg - INFO - Iter [17800/80000]	lr: 4.665e-05, eta: 14:12:20, time: 0.510, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0182, decode.loss_lovasz: 0.0179, decode.loss_boundary: 0.0443, decode.acc_seg: 99.7286, loss: 0.0805, grad_norm: 1.0184
+2025-12-24 14:56:51,913 - mmseg - INFO - Iter [17850/80000]	lr: 4.661e-05, eta: 14:10:43, time: 0.506, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0126, decode.loss_lovasz: 0.0144, decode.loss_boundary: 0.0414, decode.acc_seg: 99.8000, loss: 0.0684, grad_norm: 0.6112
+2025-12-24 14:57:18,874 - mmseg - INFO - Iter [17900/80000]	lr: 4.658e-05, eta: 14:09:13, time: 0.539, data_time: 0.011, memory: 17498, decode.loss_ce: 0.0218, decode.loss_lovasz: 0.0204, decode.loss_boundary: 0.0495, decode.acc_seg: 99.6413, loss: 0.0916, grad_norm: 1.0470
+2025-12-24 14:57:44,157 - mmseg - INFO - Iter [17950/80000]	lr: 4.654e-05, eta: 14:07:38, time: 0.506, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0173, decode.loss_lovasz: 0.0208, decode.loss_boundary: 0.0475, decode.acc_seg: 99.7192, loss: 0.0856, grad_norm: 1.3543
+2025-12-24 14:58:09,540 - mmseg - INFO - Saving checkpoint at 18000 iterations
+2025-12-24 14:58:11,281 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:58:11,281 - mmseg - INFO - Iter [18000/80000]	lr: 4.650e-05, eta: 14:06:09, time: 0.542, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0163, decode.loss_lovasz: 0.0195, decode.loss_boundary: 0.0462, decode.acc_seg: 99.6941, loss: 0.0821, grad_norm: 1.2449
+2025-12-24 14:59:34,693 - mmseg - INFO - per class results:
+2025-12-24 14:59:34,693 - mmseg - INFO - 
++----------+-------+-------+
+|  Class   |  IoU  |  Acc  |
++----------+-------+-------+
+| Obstacle | 96.84 | 98.47 |
+|  Water   | 99.56 | 99.75 |
+|   Sky    | 99.58 |  99.8 |
++----------+-------+-------+
+2025-12-24 14:59:34,693 - mmseg - INFO - Summary:
+2025-12-24 14:59:34,694 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 99.67 | 98.66 | 99.34 |
++-------+-------+-------+
+2025-12-24 14:59:34,694 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 14:59:34,694 - mmseg - INFO - Iter(val) [530]	aAcc: 0.9967, mIoU: 0.9866, mAcc: 0.9934, IoU.Obstacle: 0.9684, IoU.Water: 0.9956, IoU.Sky: 0.9958, Acc.Obstacle: 0.9847, Acc.Water: 0.9975, Acc.Sky: 0.9980
+2025-12-24 15:00:01,467 - mmseg - INFO - Iter [18050/80000]	lr: 4.646e-05, eta: 14:09:26, time: 2.204, data_time: 1.719, memory: 17498, decode.loss_ce: 0.0135, decode.loss_lovasz: 0.0153, decode.loss_boundary: 0.0412, decode.acc_seg: 99.7599, loss: 0.0701, grad_norm: 0.7992
+2025-12-24 15:00:26,662 - mmseg - INFO - Iter [18100/80000]	lr: 4.643e-05, eta: 14:07:50, time: 0.504, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0252, decode.loss_lovasz: 0.0181, decode.loss_boundary: 0.0421, decode.acc_seg: 99.4940, loss: 0.0853, grad_norm: 1.1847
+2025-12-24 15:00:52,331 - mmseg - INFO - Iter [18150/80000]	lr: 4.639e-05, eta: 14:06:17, time: 0.513, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0118, decode.loss_lovasz: 0.0153, decode.loss_boundary: 0.0432, decode.acc_seg: 99.7924, loss: 0.0703, grad_norm: 1.1257
+2025-12-24 15:01:17,663 - mmseg - INFO - Iter [18200/80000]	lr: 4.635e-05, eta: 14:04:42, time: 0.507, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0177, decode.loss_lovasz: 0.0180, decode.loss_boundary: 0.0410, decode.acc_seg: 99.7112, loss: 0.0768, grad_norm: 1.1724
+2025-12-24 15:01:42,636 - mmseg - INFO - Iter [18250/80000]	lr: 4.631e-05, eta: 14:03:07, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0160, decode.loss_lovasz: 0.0164, decode.loss_boundary: 0.0389, decode.acc_seg: 99.6348, loss: 0.0712, grad_norm: 1.1330
+2025-12-24 15:02:08,128 - mmseg - INFO - Iter [18300/80000]	lr: 4.628e-05, eta: 14:01:34, time: 0.510, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0135, decode.loss_lovasz: 0.0151, decode.loss_boundary: 0.0386, decode.acc_seg: 99.7776, loss: 0.0673, grad_norm: 0.5834
+2025-12-24 15:02:32,512 - mmseg - INFO - Iter [18350/80000]	lr: 4.624e-05, eta: 13:59:57, time: 0.488, data_time: 0.008, memory: 17498, decode.loss_ce: 0.0154, decode.loss_lovasz: 0.0229, decode.loss_boundary: 0.0523, decode.acc_seg: 99.7370, loss: 0.0906, grad_norm: 0.6198
+2025-12-24 15:02:58,463 - mmseg - INFO - Iter [18400/80000]	lr: 4.620e-05, eta: 13:58:27, time: 0.519, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0140, decode.loss_lovasz: 0.0144, decode.loss_boundary: 0.0372, decode.acc_seg: 99.7473, loss: 0.0657, grad_norm: 0.6093
+2025-12-24 15:03:23,495 - mmseg - INFO - Iter [18450/80000]	lr: 4.616e-05, eta: 13:56:53, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0209, decode.loss_lovasz: 0.0233, decode.loss_boundary: 0.0490, decode.acc_seg: 99.6224, loss: 0.0932, grad_norm: 0.7977
+2025-12-24 15:03:48,730 - mmseg - INFO - Iter [18500/80000]	lr: 4.613e-05, eta: 13:55:20, time: 0.505, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0124, decode.loss_lovasz: 0.0144, decode.loss_boundary: 0.0406, decode.acc_seg: 99.7869, loss: 0.0674, grad_norm: 0.8750
+2025-12-24 15:04:13,572 - mmseg - INFO - Iter [18550/80000]	lr: 4.609e-05, eta: 13:53:47, time: 0.497, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0143, decode.loss_lovasz: 0.0202, decode.loss_boundary: 0.0468, decode.acc_seg: 99.7439, loss: 0.0813, grad_norm: 0.7232
+2025-12-24 15:04:40,265 - mmseg - INFO - Iter [18600/80000]	lr: 4.605e-05, eta: 13:52:20, time: 0.534, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0155, decode.loss_lovasz: 0.0146, decode.loss_boundary: 0.0389, decode.acc_seg: 99.7439, loss: 0.0689, grad_norm: 0.6730
+2025-12-24 15:05:05,459 - mmseg - INFO - Iter [18650/80000]	lr: 4.601e-05, eta: 13:50:48, time: 0.504, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0148, decode.loss_lovasz: 0.0163, decode.loss_boundary: 0.0436, decode.acc_seg: 99.7500, loss: 0.0746, grad_norm: 0.6991
+2025-12-24 15:05:30,391 - mmseg - INFO - Iter [18700/80000]	lr: 4.598e-05, eta: 13:49:16, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0147, decode.loss_lovasz: 0.0182, decode.loss_boundary: 0.0477, decode.acc_seg: 99.7029, loss: 0.0806, grad_norm: 0.9173
+2025-12-24 15:05:55,369 - mmseg - INFO - Iter [18750/80000]	lr: 4.594e-05, eta: 13:47:45, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0128, decode.loss_lovasz: 0.0166, decode.loss_boundary: 0.0451, decode.acc_seg: 99.7531, loss: 0.0745, grad_norm: 0.9006
+2025-12-24 15:06:19,728 - mmseg - INFO - Iter [18800/80000]	lr: 4.590e-05, eta: 13:46:12, time: 0.487, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0176, decode.loss_lovasz: 0.0165, decode.loss_boundary: 0.0377, decode.acc_seg: 99.6249, loss: 0.0718, grad_norm: 0.7972
+2025-12-24 15:06:44,937 - mmseg - INFO - Iter [18850/80000]	lr: 4.586e-05, eta: 13:44:41, time: 0.504, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0142, decode.loss_lovasz: 0.0188, decode.loss_boundary: 0.0440, decode.acc_seg: 99.7401, loss: 0.0770, grad_norm: 0.8019
+2025-12-24 15:07:09,484 - mmseg - INFO - Iter [18900/80000]	lr: 4.583e-05, eta: 13:43:10, time: 0.491, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0149, decode.loss_lovasz: 0.0183, decode.loss_boundary: 0.0442, decode.acc_seg: 99.7595, loss: 0.0774, grad_norm: 0.8637
+2025-12-24 15:07:34,949 - mmseg - INFO - Iter [18950/80000]	lr: 4.579e-05, eta: 13:41:41, time: 0.509, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0158, decode.loss_lovasz: 0.0220, decode.loss_boundary: 0.0561, decode.acc_seg: 99.6965, loss: 0.0939, grad_norm: 1.1746
+2025-12-24 15:08:00,995 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 15:08:00,996 - mmseg - INFO - Iter [19000/80000]	lr: 4.575e-05, eta: 13:40:15, time: 0.521, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0235, decode.loss_lovasz: 0.0268, decode.loss_boundary: 0.0576, decode.acc_seg: 99.5643, loss: 0.1079, grad_norm: 1.3110
+2025-12-24 15:08:26,011 - mmseg - INFO - Iter [19050/80000]	lr: 4.571e-05, eta: 13:38:45, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0123, decode.loss_lovasz: 0.0188, decode.loss_boundary: 0.0434, decode.acc_seg: 99.7795, loss: 0.0745, grad_norm: 1.2483
+2025-12-24 15:08:53,606 - mmseg - INFO - Iter [19100/80000]	lr: 4.568e-05, eta: 13:37:24, time: 0.552, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0114, decode.loss_lovasz: 0.0141, decode.loss_boundary: 0.0371, decode.acc_seg: 99.7793, loss: 0.0626, grad_norm: 1.0467
+2025-12-24 15:09:18,643 - mmseg - INFO - Iter [19150/80000]	lr: 4.564e-05, eta: 13:35:56, time: 0.501, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0158, decode.loss_lovasz: 0.0162, decode.loss_boundary: 0.0432, decode.acc_seg: 99.7244, loss: 0.0752, grad_norm: 1.7019
+2025-12-24 15:09:43,625 - mmseg - INFO - Iter [19200/80000]	lr: 4.560e-05, eta: 13:34:27, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0153, decode.loss_lovasz: 0.0171, decode.loss_boundary: 0.0459, decode.acc_seg: 99.7453, loss: 0.0782, grad_norm: 1.6376
+2025-12-24 15:10:09,166 - mmseg - INFO - Iter [19250/80000]	lr: 4.556e-05, eta: 13:33:01, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0135, decode.loss_lovasz: 0.0165, decode.loss_boundary: 0.0414, decode.acc_seg: 99.7667, loss: 0.0714, grad_norm: 0.6510
+2025-12-24 15:10:34,592 - mmseg - INFO - Iter [19300/80000]	lr: 4.553e-05, eta: 13:31:34, time: 0.509, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0197, decode.loss_lovasz: 0.0272, decode.loss_boundary: 0.0533, decode.acc_seg: 99.5973, loss: 0.1002, grad_norm: 0.6925
+2025-12-24 15:10:59,610 - mmseg - INFO - Iter [19350/80000]	lr: 4.549e-05, eta: 13:30:07, time: 0.500, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0129, decode.loss_lovasz: 0.0139, decode.loss_boundary: 0.0413, decode.acc_seg: 99.7911, loss: 0.0682, grad_norm: 0.7000
+2025-12-24 15:11:24,225 - mmseg - INFO - Iter [19400/80000]	lr: 4.545e-05, eta: 13:28:39, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0151, decode.loss_lovasz: 0.0151, decode.loss_boundary: 0.0402, decode.acc_seg: 99.7467, loss: 0.0704, grad_norm: 0.6801
+2025-12-24 15:11:48,858 - mmseg - INFO - Iter [19450/80000]	lr: 4.541e-05, eta: 13:27:11, time: 0.493, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0137, decode.loss_lovasz: 0.0179, decode.loss_boundary: 0.0462, decode.acc_seg: 99.7454, loss: 0.0778, grad_norm: 1.8934
+2025-12-24 15:12:13,791 - mmseg - INFO - Iter [19500/80000]	lr: 4.538e-05, eta: 13:25:44, time: 0.499, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0166, decode.loss_lovasz: 0.0176, decode.loss_boundary: 0.0503, decode.acc_seg: 99.7308, loss: 0.0845, grad_norm: 1.8666
+2025-12-24 15:12:38,342 - mmseg - INFO - Iter [19550/80000]	lr: 4.534e-05, eta: 13:24:16, time: 0.491, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0143, decode.loss_lovasz: 0.0153, decode.loss_boundary: 0.0408, decode.acc_seg: 99.7386, loss: 0.0704, grad_norm: 0.6585
+2025-12-24 15:13:03,264 - mmseg - INFO - Iter [19600/80000]	lr: 4.530e-05, eta: 13:22:50, time: 0.498, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0140, decode.loss_lovasz: 0.0212, decode.loss_boundary: 0.0473, decode.acc_seg: 99.7341, loss: 0.0826, grad_norm: 0.7652
+2025-12-24 15:13:29,835 - mmseg - INFO - Iter [19650/80000]	lr: 4.526e-05, eta: 13:21:29, time: 0.531, data_time: 0.051, memory: 17498, decode.loss_ce: 0.0130, decode.loss_lovasz: 0.0174, decode.loss_boundary: 0.0460, decode.acc_seg: 99.7562, loss: 0.0764, grad_norm: 0.8785
+2025-12-24 15:13:54,562 - mmseg - INFO - Iter [19700/80000]	lr: 4.523e-05, eta: 13:20:03, time: 0.495, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0165, decode.loss_lovasz: 0.0211, decode.loss_boundary: 0.0473, decode.acc_seg: 99.6602, loss: 0.0849, grad_norm: 0.8017
+2025-12-24 15:14:19,832 - mmseg - INFO - Iter [19750/80000]	lr: 4.519e-05, eta: 13:18:39, time: 0.505, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0144, decode.loss_lovasz: 0.0172, decode.loss_boundary: 0.0428, decode.acc_seg: 99.7480, loss: 0.0744, grad_norm: 0.6853
+2025-12-24 15:14:46,403 - mmseg - INFO - Iter [19800/80000]	lr: 4.515e-05, eta: 13:17:19, time: 0.531, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0168, decode.loss_lovasz: 0.0142, decode.loss_boundary: 0.0412, decode.acc_seg: 99.7010, loss: 0.0722, grad_norm: 0.5678
+2025-12-24 15:15:11,023 - mmseg - INFO - Iter [19850/80000]	lr: 4.511e-05, eta: 13:15:54, time: 0.492, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0144, decode.loss_lovasz: 0.0187, decode.loss_boundary: 0.0495, decode.acc_seg: 99.7631, loss: 0.0826, grad_norm: 0.7770
+2025-12-24 15:15:36,114 - mmseg - INFO - Iter [19900/80000]	lr: 4.508e-05, eta: 13:14:30, time: 0.502, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0180, decode.loss_lovasz: 0.0188, decode.loss_boundary: 0.0452, decode.acc_seg: 99.6996, loss: 0.0820, grad_norm: 1.1582
+2025-12-24 15:16:01,264 - mmseg - INFO - Iter [19950/80000]	lr: 4.504e-05, eta: 13:13:07, time: 0.503, data_time: 0.009, memory: 17498, decode.loss_ce: 0.0203, decode.loss_lovasz: 0.0172, decode.loss_boundary: 0.0443, decode.acc_seg: 99.6687, loss: 0.0819, grad_norm: 1.1823
+2025-12-24 15:16:26,992 - mmseg - INFO - Saving checkpoint at 20000 iterations
+2025-12-24 15:16:28,423 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 15:16:28,423 - mmseg - INFO - Iter [20000/80000]	lr: 4.500e-05, eta: 13:11:50, time: 0.543, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0204, decode.loss_lovasz: 0.0248, decode.loss_boundary: 0.0497, decode.acc_seg: 99.5891, loss: 0.0948, grad_norm: 1.1894
+2025-12-24 15:17:52,591 - mmseg - INFO - per class results:
+2025-12-24 15:17:52,591 - mmseg - INFO - 
++----------+-------+-------+
+|  Class   |  IoU  |  Acc  |
++----------+-------+-------+
+| Obstacle | 96.77 | 97.88 |
+|  Water   | 99.52 | 99.82 |
+|   Sky    | 99.62 | 99.84 |
++----------+-------+-------+
+2025-12-24 15:17:52,591 - mmseg - INFO - Summary:
+2025-12-24 15:17:52,592 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 99.67 | 98.64 | 99.18 |
++-------+-------+-------+
+2025-12-24 15:17:52,592 - mmseg - INFO - Exp name: segman_b_mastr_ultimate.py
+2025-12-24 15:17:52,592 - mmseg - INFO - Iter(val) [530]	aAcc: 0.9967, mIoU: 0.9864, mAcc: 0.9918, IoU.Obstacle: 0.9677, IoU.Water: 0.9952, IoU.Sky: 0.9962, Acc.Obstacle: 0.9788, Acc.Water: 0.9982, Acc.Sky: 0.9984
+2025-12-24 15:18:17,110 - mmseg - INFO - Iter [20050/80000]	lr: 4.496e-05, eta: 13:14:37, time: 2.174, data_time: 1.692, memory: 17498, decode.loss_ce: 0.0147, decode.loss_lovasz: 0.0164, decode.loss_boundary: 0.0408, decode.acc_seg: 99.7635, loss: 0.0718, grad_norm: 0.5284
+2025-12-24 15:18:42,649 - mmseg - INFO - Iter [20100/80000]	lr: 4.493e-05, eta: 13:13:14, time: 0.511, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0221, decode.loss_lovasz: 0.0224, decode.loss_boundary: 0.0456, decode.acc_seg: 99.6550, loss: 0.0901, grad_norm: 0.9550
+2025-12-24 15:19:10,224 - mmseg - INFO - Iter [20150/80000]	lr: 4.489e-05, eta: 13:11:59, time: 0.551, data_time: 0.052, memory: 17498, decode.loss_ce: 0.0136, decode.loss_lovasz: 0.0157, decode.loss_boundary: 0.0422, decode.acc_seg: 99.7679, loss: 0.0715, grad_norm: 1.0877
+2025-12-24 15:19:37,546 - mmseg - INFO - Iter [20200/80000]	lr: 4.485e-05, eta: 13:10:42, time: 0.546, data_time: 0.010, memory: 17498, decode.loss_ce: 0.0138, decode.loss_lovasz: 0.0214, decode.loss_boundary: 0.0554, decode.acc_seg: 99.7608, loss: 0.0906, grad_norm: 0.8280

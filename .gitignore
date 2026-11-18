@@ -1,6 +1,20 @@
-outputs/
+code/SegMAN/segmentation/data/
+code/SegMAN/segmentation/work_dirs/
 *.pth
-data/
+*.pt
+*.ckpt
+*.safetensors
+*.bin
+*.onnx
+*.tar.gz
+*.zip
+*.log
+# Python 与 Jupyter 缓存
 __pycache__/
-*.pth.tar
+*.py[cod]
+.ipynb_checkpoints/
+wandb/
+runs/
 code/SegMAN/pretrained/
+*.pth.tar
+code/SegMAN/segmentation/outputs/
